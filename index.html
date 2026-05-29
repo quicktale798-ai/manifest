@@ -338,6 +338,37 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .arch-net.profit{color:var(--green);} .arch-net.loss{color:var(--red);}
 .arch-badge{font-size:.92rem;}
 
+/* المهام والأهداف المطوّرة */
+.sub-add{margin-top:6px;}
+.mini-label{font-size:.8rem;color:var(--text-muted);font-weight:600;margin:12px 0 7px;}
+.row2{display:flex;gap:9px;margin-top:11px;}
+.row2 input{flex:1;}
+.cat-filter{margin-bottom:14px;}
+.urgent-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:13px 14px;margin:14px 0;font-weight:600;font-size:.95rem;cursor:pointer;}
+.urgent-row input{width:24px;height:24px;accent-color:var(--red);cursor:pointer;}
+/* الأهداف */
+.goal-item{background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:14px;margin-bottom:11px;animation:fade .3s ease;}
+.gi-head{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.gi-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.gi-name{flex:1;font-weight:700;font-size:.98rem;}
+.gi-count{font-size:.92rem;color:var(--text-muted);}
+.gi-count b{color:var(--text);font-size:1.05rem;}
+.gi-del{width:32px;height:32px;font-size:.95rem;}
+.gi-controls{display:flex;gap:9px;margin-top:11px;}
+.gi-btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:11px;font-family:inherit;font-weight:700;cursor:pointer;font-size:.92rem;padding:10px;min-height:44px;}
+.gi-btn.minus{width:54px;font-size:1.3rem;}
+.gi-btn.plus{flex:1;background:var(--green);color:#fff;border-color:transparent;}
+/* المهام */
+.task{align-items:flex-start;}
+.task .checkbox{margin-top:2px;}
+.t-main{flex:1;min-width:0;}
+.t-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.t-cat,.t-rep,.t-urgent{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;}
+.t-cat{background:var(--surface-3);}
+.t-rep{background:var(--primary-soft);color:var(--primary);}
+.t-urgent{background:var(--red-soft);color:var(--red);}
+.task.urgent{box-shadow:inset 3px 0 0 0 transparent;}
+
 /* التوست */
 #toast{
   position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -552,13 +583,35 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
       </div>
     </section>
 
-    <!-- ============ المهام الأسبوعية ============ -->
+    <!-- ============ المهام والأهداف ============ -->
     <section class="page" id="page-tasks">
+      <!-- الأهداف الأسبوعية -->
       <div class="card">
-        <h2 class="card-title">📋 المهام الأسبوعية والمشاريع</h2>
-        <div class="add-row">
+        <h2 class="card-title green">🎯 الأهداف الأسبوعية</h2>
+        <div id="goalsList"></div>
+        <div class="sub-add">
+          <input type="text" id="goalName" placeholder="اسم هدف جديد (مثال: تواصلات LinkedIn)" />
+          <div class="mini-label">الفئة</div>
+          <div class="chips" id="goalCatChips"></div>
+          <div class="row2">
+            <input type="number" id="goalTargetInp" inputmode="numeric" placeholder="العدد المستهدف" />
+            <button class="btn-primary" id="addGoalBtn" style="margin-top:0;flex:1.4">➕ إضافة هدف</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- المهام -->
+      <div class="card">
+        <h2 class="card-title">📋 المهام والمشاريع</h2>
+        <div class="chips cat-filter" id="catFilter"></div>
+        <div class="sub-add">
           <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..." />
-          <button class="add-btn" id="addTaskBtn">+</button>
+          <div class="mini-label">الفئة</div>
+          <div class="chips" id="taskCatChips"></div>
+          <div class="mini-label">التكرار</div>
+          <div class="chips" id="taskRepeatChips"></div>
+          <label class="urgent-row"><span>🔴 مهمة عاجلة</span><input type="checkbox" id="taskUrgent" /></label>
+          <button class="btn-primary" id="addTaskBtn">➕ إضافة المهمة</button>
         </div>
         <div id="tasksList"></div>
       </div>
@@ -675,9 +728,16 @@ function defaultState(){
     habits:{walk:false,walkMin:15,read:false,charity:false,english:false,home:false},
     engWords:'',
     tasks:[
-      {id:uid(),text:'تحديث السيرة الذاتية والـ LinkedIn',done:false},
-      {id:uid(),text:'تجهيز 3 قصص للسوشيال ميديا',done:false},
-      {id:uid(),text:'مراجعة القرآن والأدعية مرتين في الأسبوع',done:false},
+      {id:uid(),text:'تحديث السيرة الذاتية والـ LinkedIn',cat:'job',repeat:'none',priority:'urgent',done:false,lastDone:''},
+      {id:uid(),text:'التقديم على وظائف جديدة',cat:'job',repeat:'weekly',priority:'normal',done:false,lastDone:''},
+      {id:uid(),text:'نشر منشور LinkedIn الأسبوعي',cat:'linkedin',repeat:'weekly',priority:'normal',done:false,lastDone:''},
+      {id:uid(),text:'تجهيز 3 قصص للسوشيال ميديا',cat:'linkedin',repeat:'weekly',priority:'normal',done:false,lastDone:''},
+      {id:uid(),text:'مراجعة القرآن والأدعية',cat:'personal',repeat:'weekly',priority:'normal',done:false,lastDone:''},
+    ],
+    goals:[
+      {id:uid(),name:'تواصلات على LinkedIn',cat:'linkedin',target:35,count:0,weekKey:weekStartKey()},
+      {id:uid(),name:'التفاعل مع منشورات في مجالك',cat:'linkedin',target:21,count:0,weekKey:weekStartKey()},
+      {id:uid(),name:'التقديم على وظائف',cat:'job',target:5,count:0,weekKey:weekStartKey()},
     ],
     archive:[],          // أرشيف الأيام السابقة للتقارير
     activeDate:todayKey(),// تاريخ اليوم الذي تخصّه البيانات الحالية
@@ -700,7 +760,8 @@ function load(){
       prayers: {...d.prayers, ...(saved.prayers||{})},
       habits: {...d.habits, ...(saved.habits||{})},
       engWords: saved.engWords ?? '',
-      tasks: Array.isArray(saved.tasks)?saved.tasks:d.tasks,
+      tasks: Array.isArray(saved.tasks)? saved.tasks.map(t=>({cat:'general',repeat:'none',priority:'normal',done:false,lastDone:'',...t})) : d.tasks,
+      goals: Array.isArray(saved.goals)? saved.goals : d.goals,
       archive: Array.isArray(saved.archive)?saved.archive:[],
       activeDate: saved.activeDate || todayKey(),
     };
@@ -918,16 +979,82 @@ $('#walkPlus').onclick=(e)=>{ e.stopPropagation(); state.habits.walkMin+=5; save
 $('#walkMinus').onclick=(e)=>{ e.stopPropagation(); state.habits.walkMin=Math.max(0,state.habits.walkMin-5); save(); renderHabits(); };
 $('#saveWordsBtn').onclick=()=>{ state.engWords=$('#engWords').value; save(); toast('تم حفظ الكلمات 💾'); };
 
-/* ============ المهام الأسبوعية ============ */
+/* ============ المهام والأهداف ============ */
+const CATS=[
+  {id:'job',     name:'بحث الوظيفة',     emoji:'💼', color:'#2563eb'},
+  {id:'linkedin',name:'LinkedIn والمحتوى',emoji:'📣', color:'#0a66c2'},
+  {id:'personal',name:'مشاريع شخصية',    emoji:'🚀', color:'#7c3aed'},
+  {id:'general', name:'عام',             emoji:'📌', color:'#64748b'},
+];
+function catById(id){ return CATS.find(c=>c.id===id)||CATS[CATS.length-1]; }
+let taskFilter='all', newTaskCat='job', newTaskRepeat='none', newGoalCat='linkedin';
+
+/* حالة الإنجاز حسب نوع التكرار */
+function isTaskDone(t){
+  if(t.repeat==='daily')  return t.lastDone===todayKey();
+  if(t.repeat==='weekly') return t.lastDone===weekStartKey();
+  return !!t.done;
+}
+function toggleTask(t){
+  if(t.repeat==='daily'){ t.lastDone=(t.lastDone===todayKey())?'':todayKey(); }
+  else if(t.repeat==='weekly'){ const w=weekStartKey(); t.lastDone=(t.lastDone===w)?'':w; }
+  else { t.done=!t.done; }
+}
+
+/* اختيار الفئة/التكرار */
+function chipRow(wrapId, options, current, onPick, colorFn){
+  const wrap=$('#'+wrapId); wrap.innerHTML='';
+  options.forEach(o=>{
+    const b=document.createElement('button');
+    const sel=current===o.id;
+    b.className='chip'+(sel?' sel':'');
+    if(sel) b.style.background = colorFn? colorFn(o): 'var(--primary)';
+    b.innerHTML = o.emoji? `<span class="c-emoji">${o.emoji}</span>${o.name}` : o.name;
+    b.onclick=()=>onPick(o.id);
+    wrap.appendChild(b);
+  });
+}
+function renderTaskSelectors(){
+  chipRow('catFilter', [{id:'all',name:'الكل',emoji:'📂'},...CATS], taskFilter, id=>{taskFilter=id;renderTasks();}, o=>o.id==='all'?'var(--primary)':catById(o.id).color);
+  chipRow('taskCatChips', CATS, newTaskCat, id=>{newTaskCat=id;renderTaskSelectors();}, o=>catById(o.id).color);
+  chipRow('taskRepeatChips', [{id:'none',name:'مرة واحدة'},{id:'daily',name:'🔁 يومية'},{id:'weekly',name:'🔁 أسبوعية'}], newTaskRepeat, id=>{newTaskRepeat=id;renderTaskSelectors();});
+  chipRow('goalCatChips', CATS, newGoalCat, id=>{newGoalCat=id;renderTaskSelectors();}, o=>catById(o.id).color);
+}
+
 function renderTasks(){
+  renderTaskSelectors();
+  renderGoals();
   const list=$('#tasksList');
-  if(!state.tasks.length){ list.innerHTML='<div class="empty">لا توجد مهام، أضف مهمتك الأولى</div>'; return; }
+  let items=state.tasks.slice();
+  if(taskFilter!=='all') items=items.filter(t=>(t.cat||'general')===taskFilter);
+  items.sort((a,b)=>{
+    const da=isTaskDone(a), db=isTaskDone(b);
+    if(da!==db) return da?1:-1;                         // المكتمل تحت
+    const ua=a.priority==='urgent', ub=b.priority==='urgent';
+    if(ua!==ub) return ua?-1:1;                         // العاجل فوق
+    return 0;
+  });
+  if(!items.length){ list.innerHTML='<div class="empty">لا توجد مهام في هذي الفئة</div>'; return; }
   list.innerHTML='';
-  state.tasks.forEach(t=>{
-    const el=document.createElement('div'); el.className='task'+(t.done?' on':'');
-    el.innerHTML=`<div class="checkbox">${t.done?'✓':''}</div><span class="t-text">${escapeHtml(t.text)}</span><button class="del-btn">🗑️</button>`;
-    el.querySelector('.checkbox').onclick=()=>{ t.done=!t.done; save(); renderTasks(); };
-    el.querySelector('.t-text').onclick=()=>{ t.done=!t.done; save(); renderTasks(); };
+  items.forEach(t=>{
+    const c=catById(t.cat||'general'), done=isTaskDone(t);
+    const repTxt = t.repeat==='daily'?'🔁 يومية': t.repeat==='weekly'?'🔁 أسبوعية':'';
+    const el=document.createElement('div');
+    el.className='task'+(done?' on':'')+(t.priority==='urgent'?' urgent':'');
+    el.style.borderInlineStart='4px solid '+c.color;
+    el.innerHTML=`<div class="checkbox">${done?'✓':''}</div>
+      <div class="t-main">
+        <span class="t-text">${escapeHtml(t.text)}</span>
+        <div class="t-tags">
+          <span class="t-cat" style="color:${c.color}">${c.emoji} ${c.name}</span>
+          ${repTxt?`<span class="t-rep">${repTxt}</span>`:''}
+          ${t.priority==='urgent'?'<span class="t-urgent">🔴 عاجلة</span>':''}
+        </div>
+      </div>
+      <button class="del-btn">🗑️</button>`;
+    const toggle=()=>{ toggleTask(t); save(); renderTasks(); };
+    el.querySelector('.checkbox').onclick=toggle;
+    el.querySelector('.t-text').onclick=toggle;
     el.querySelector('.del-btn').onclick=()=>{ state.tasks=state.tasks.filter(x=>x.id!==t.id); save(); renderTasks(); toast('تم حذف المهمة'); };
     list.appendChild(el);
   });
@@ -935,11 +1062,55 @@ function renderTasks(){
 function addTask(){
   const v=$('#taskInput').value.trim();
   if(!v){ toast('اكتب نص المهمة 🙏'); return; }
-  state.tasks.push({id:uid(),text:v,done:false}); save();
-  $('#taskInput').value=''; renderTasks(); toast('تمت إضافة المهمة ✅');
+  state.tasks.push({id:uid(),text:v,cat:newTaskCat,repeat:newTaskRepeat,priority:$('#taskUrgent').checked?'urgent':'normal',done:false,lastDone:''});
+  save();
+  $('#taskInput').value=''; $('#taskUrgent').checked=false;
+  renderTasks(); toast('تمت إضافة المهمة ✅');
 }
 $('#addTaskBtn').onclick=addTask;
 $('#taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
+
+/* ============ الأهداف الأسبوعية ============ */
+function syncGoalWeek(g){ const w=weekStartKey(); if(g.weekKey!==w){ g.weekKey=w; g.count=0; } }
+function renderGoals(){
+  const list=$('#goalsList');
+  if(!state.goals.length){ list.innerHTML='<div class="empty">لا توجد أهداف، أضف هدفك الأسبوعي الأول 🎯</div>'; return; }
+  list.innerHTML='';
+  state.goals.forEach(g=>{
+    syncGoalWeek(g);
+    const c=catById(g.cat||'general');
+    const pct=Math.min(100,(g.count/g.target)*100), done=g.count>=g.target;
+    const el=document.createElement('div'); el.className='goal-item';
+    el.innerHTML=`
+      <div class="gi-head">
+        <span class="gi-dot" style="background:${c.color}"></span>
+        <span class="gi-name">${escapeHtml(g.name)}</span>
+        <span class="gi-count">${done?'🎉 ':''}<b>${g.count}</b>/${g.target}</span>
+        <button class="del-btn gi-del">🗑️</button>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar ${done?'done':''}" style="width:${pct}%"></div></div>
+      <div class="gi-controls">
+        <button class="gi-btn minus">−</button>
+        <button class="gi-btn plus">＋ سجّل تقدّم</button>
+      </div>`;
+    el.querySelector('.plus').onclick=()=>{ g.count++; const reached=g.count===g.target; save(); renderGoals(); if(reached) toast('🎉 مبروك! حققت هدف: '+g.name); };
+    el.querySelector('.minus').onclick=()=>{ g.count=Math.max(0,g.count-1); save(); renderGoals(); };
+    el.querySelector('.gi-del').onclick=()=>{ state.goals=state.goals.filter(x=>x.id!==g.id); save(); renderGoals(); toast('تم حذف الهدف'); };
+    list.appendChild(el);
+  });
+}
+function addGoal(){
+  const name=$('#goalName').value.trim();
+  const target=parseInt($('#goalTargetInp').value);
+  if(!name){ toast('اكتب اسم الهدف 🙏'); return; }
+  if(!target||target<=0){ toast('اكتب العدد المستهدف 🙏'); return; }
+  state.goals.push({id:uid(),name,cat:newGoalCat,target,count:0,weekKey:weekStartKey()});
+  save();
+  $('#goalName').value=''; $('#goalTargetInp').value='';
+  renderGoals(); toast('تمت إضافة الهدف 🎯');
+}
+$('#addGoalBtn').onclick=addGoal;
+$('#goalTargetInp').addEventListener('keydown',e=>{ if(e.key==='Enter') addGoal(); });
 
 /* ============ الأرشفة (تحفظ اليوم قبل مسحه للتقارير) ============ */
 function buildDayRecord(dateKey){
