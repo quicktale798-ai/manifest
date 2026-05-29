@@ -119,11 +119,11 @@ nav.tabs{
 @supports not (backdrop-filter:blur(1px)){ nav.tabs{background:var(--bg-1);} }
 .tab{
   flex:1;border:none;background:transparent;color:var(--text-soft);
-  padding:9px 2px;border-radius:13px;cursor:pointer;font-family:inherit;
+  padding:9px 1px;border-radius:13px;cursor:pointer;font-family:inherit;
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  font-size:.7rem;font-weight:600;transition:all .2s;min-height:54px;justify-content:center;
+  font-size:.64rem;font-weight:600;transition:all .2s;min-height:54px;justify-content:center;
 }
-.tab .ti{font-size:1.25rem;line-height:1;}
+.tab .ti{font-size:1.2rem;line-height:1;}
 .tab.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
 
 /* ========================== الصفحات والبطاقات ========================== */
@@ -306,6 +306,37 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .task .checkbox{cursor:pointer;}
 .task.on .checkbox{background:var(--primary);border-color:var(--primary);}
 
+/* التقارير */
+.chart{display:flex;align-items:flex-end;justify-content:space-between;gap:7px;height:160px;padding-top:8px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+.bar-val{font-size:.68rem;font-weight:700;color:var(--text-muted);}
+.bar{
+  width:100%;max-width:34px;border-radius:8px 8px 4px 4px;min-height:4px;
+  background:linear-gradient(180deg,var(--primary),color-mix(in srgb,var(--primary) 55%, transparent));
+  transition:height .6s cubic-bezier(.2,.8,.2,1);
+}
+.bar.top{background:linear-gradient(180deg,var(--green),color-mix(in srgb,var(--green) 55%, transparent));}
+.bar-lbl{font-size:.7rem;color:var(--text-soft);font-weight:600;}
+.insight{
+  display:flex;align-items:center;gap:12px;background:var(--surface-2);border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);padding:13px;margin-bottom:9px;
+}
+.insight .in-ico{font-size:1.4rem;width:30px;text-align:center;}
+.insight .in-body{flex:1;}
+.insight .in-lbl{font-size:.8rem;color:var(--text-muted);}
+.insight .in-val{font-weight:700;font-size:1.02rem;margin-top:2px;}
+.streaks{display:flex;gap:11px;}
+.streak{flex:1;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:15px 10px;text-align:center;}
+.streak .st-num{font-size:2rem;font-weight:700;color:var(--green);letter-spacing:-1px;}
+.streak .st-lbl{font-size:.78rem;color:var(--text-muted);margin-top:4px;line-height:1.5;}
+.arch-item{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:12px;margin-bottom:9px;}
+.arch-date{flex:1;}
+.arch-date .ad-day{font-weight:700;font-size:.95rem;}
+.arch-date .ad-meta{font-size:.76rem;color:var(--text-muted);margin-top:3px;}
+.arch-net{font-weight:700;font-size:1.05rem;}
+.arch-net.profit{color:var(--green);} .arch-net.loss{color:var(--red);}
+.arch-badge{font-size:.92rem;}
+
 /* التوست */
 #toast{
   position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -360,6 +391,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
     <button class="tab" data-page="expenses"><span class="ti">💸</span>المصروفات</button>
     <button class="tab" data-page="habits"><span class="ti">✅</span>العادات</button>
     <button class="tab" data-page="tasks"><span class="ti">📋</span>المهام</button>
+    <button class="tab" data-page="reports"><span class="ti">📈</span>التقارير</button>
   </nav>
 
   <main>
@@ -530,6 +562,49 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
         <div id="tasksList"></div>
       </div>
     </section>
+
+    <!-- ============ التقارير ============ -->
+    <section class="page" id="page-reports">
+      <div class="card">
+        <h2 class="card-title gold">📈 التقارير والإحصائيات</h2>
+        <div class="chips" id="periodChips" style="margin-bottom:4px;"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title green">💰 ملخص الفترة</h2>
+        <div class="stats">
+          <div class="stat green"><div class="s-ico">💵</div><div class="s-val" id="rpIncome">0</div><div class="s-lbl">إجمالي الدخل</div></div>
+          <div class="stat net profit" id="rpNetWrap"><div class="s-ico">📈</div><div class="s-val" id="rpNet">0</div><div class="s-lbl">صافي الربح</div></div>
+          <div class="stat"><div class="s-ico">🚗</div><div class="s-val" id="rpTrips">0</div><div class="s-lbl">عدد الرحلات</div></div>
+          <div class="stat"><div class="s-ico">📅</div><div class="s-val" id="rpAvg">0</div><div class="s-lbl">متوسط الدخل اليومي</div></div>
+          <div class="stat"><div class="s-ico">🛣️</div><div class="s-val" id="rpKm">0</div><div class="s-lbl">الكيلومترات</div></div>
+          <div class="stat"><div class="s-ico">⚖️</div><div class="s-val" id="rpPerKm">0</div><div class="s-lbl">ربح/كم</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">📊 دخل آخر 7 أيام</h2>
+        <div class="chart" id="incomeChart"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title gold">💡 رؤى تساعدك تكسب أكثر</h2>
+        <div id="insights"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title green">🔥 الاستمرارية</h2>
+        <div class="streaks">
+          <div class="streak"><div class="st-num" id="stkGoal">0</div><div class="st-lbl">🎯 أيام حققت الهدف متتالية</div></div>
+          <div class="streak"><div class="st-num" id="stkPray">0</div><div class="st-lbl">🕌 أيام صلاة كاملة متتالية</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">🗂️ الأيام المسجلة</h2>
+        <div id="archiveList"></div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -539,7 +614,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
   <div class="modal-box">
     <div class="m-ico">🔄</div>
     <h3>بدء يوم جديد؟</h3>
-    <p>سيتم مسح رحلات اليوم والمصروفات والصلوات والعادات.<br>تبقى المهام الأسبوعية والكلمات الإنجليزية محفوظة.</p>
+    <p>سيُحفظ ملخص اليوم في التقارير، ثم تُمسح رحلات اليوم والمصروفات والصلوات والعادات لتبدأ يوماً جديداً.<br>المهام الأسبوعية والكلمات الإنجليزية تبقى محفوظة.</p>
     <div class="modal-actions">
       <button class="btn-cancel" id="modalCancel">إلغاء</button>
       <button class="btn-confirm" id="modalConfirm">نعم، ابدأ</button>
@@ -603,9 +678,12 @@ function defaultState(){
       {id:uid(),text:'تجهيز 3 قصص للسوشيال ميديا',done:false},
       {id:uid(),text:'مراجعة القرآن والأدعية مرتين في الأسبوع',done:false},
     ],
+    archive:[],          // أرشيف الأيام السابقة للتقارير
+    activeDate:todayKey(),// تاريخ اليوم الذي تخصّه البيانات الحالية
   };
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
 let state;
 function load(){
@@ -622,6 +700,8 @@ function load(){
       habits: {...d.habits, ...(saved.habits||{})},
       engWords: saved.engWords ?? '',
       tasks: Array.isArray(saved.tasks)?saved.tasks:d.tasks,
+      archive: Array.isArray(saved.archive)?saved.archive:[],
+      activeDate: saved.activeDate || todayKey(),
     };
   }catch(e){ state = defaultState(); }
 }
@@ -733,7 +813,7 @@ $('#addTripBtn').onclick=()=>{
   state.trips.push({
     id:uid(), app:app.id, appName:app.name, color:app.color,
     amount:amount, km:parseFloat($('#tripKm').value)||0,
-    note:$('#tripNote').value.trim(), time:nowTime(),
+    note:$('#tripNote').value.trim(), time:nowTime(), hour:new Date().getHours(),
   });
   save();
   $('#tripAmount').value=''; $('#tripKm').value=''; $('#tripNote').value='';
@@ -860,18 +940,55 @@ function addTask(){
 $('#addTaskBtn').onclick=addTask;
 $('#taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
 
+/* ============ الأرشفة (تحفظ اليوم قبل مسحه للتقارير) ============ */
+function buildDayRecord(dateKey){
+  const inc=totalIncome(), exp=totalExpense();
+  const byApp={}, byHour={};
+  state.trips.forEach(t=>{
+    byApp[t.app]=(byApp[t.app]||0)+Number(t.amount||0);
+    if(typeof t.hour==='number') byHour[t.hour]=(byHour[t.hour]||0)+Number(t.amount||0);
+  });
+  const goal = goalForDate(dateKey);
+  return {
+    date:dateKey, dow:new Date(dateKey).getDay(),
+    income:inc, expense:exp, net:inc-exp, goal, goalMet:inc>=goal,
+    trips:state.trips.length, km:totalKm(),
+    prayers:prayerCount(), habits:['walk','read','charity','english','home'].filter(k=>state.habits[k]).length,
+    byApp, byHour,
+  };
+}
+function dayHasData(){
+  return state.trips.length>0 || state.expenses.length>0 || prayerCount()>0 ||
+         ['walk','read','charity','english','home'].some(k=>state.habits[k]);
+}
+function clearDay(){
+  state.trips=[]; state.expenses=[];
+  state.prayers={fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false};
+  state.habits={walk:false,walkMin:15,read:false,charity:false,english:false,home:false};
+  // المهام الأسبوعية والكلمات الإنجليزية تبقى محفوظة
+}
+function archiveAndReset(newDateKey){
+  if(dayHasData()){
+    const rec=buildDayRecord(state.activeDate||todayKey());
+    // لو فيه سجل لنفس اليوم استبدله، وإلا أضفه
+    const idx=state.archive.findIndex(r=>r.date===rec.date);
+    if(idx>=0) state.archive[idx]=rec; else state.archive.push(rec);
+    if(state.archive.length>400) state.archive=state.archive.slice(-400);
+  }
+  clearDay();
+  state.activeDate=newDateKey;
+  save();
+}
+function goalForDate(key){ const d=new Date(key).getDay(); return (d===5||d===6)?150:300; }
+
 /* ============ يوم جديد ============ */
 $('#newDayBtn').onclick=()=> $('#modal').classList.add('show');
 $('#modalCancel').onclick=()=> $('#modal').classList.remove('show');
 $('#modalConfirm').onclick=()=>{
-  state.trips=[]; state.expenses=[];
-  state.prayers={fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false};
-  state.habits={walk:false,walkMin:15,read:false,charity:false,english:false,home:false};
-  // المهام الأسبوعية والكلمات الإنجليزية تبقى كما هي
-  save();
+  archiveAndReset(todayKey());
   $('#modal').classList.remove('show');
   renderAll();
-  toast('يوم جديد، بالتوفيق! 🌅');
+  toast('تم حفظ اليوم في الأرشيف، يومك جديد! 🌅');
 };
 $('#modal').addEventListener('click',e=>{ if(e.target.id==='modal') $('#modal').classList.remove('show'); });
 
@@ -910,14 +1027,177 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
 
+/* ============ التقارير ============ */
+const DOW_AR=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+let reportPeriod='week'; // week | month | all
+
+// السجل الحي لليوم الحالي (يُدمج مع الأرشيف في التقارير)
+function liveTodayRecord(){
+  if(!dayHasData()) return null;
+  const r=buildDayRecord(state.activeDate||todayKey()); r._live=true; return r;
+}
+function allRecords(){
+  const recs=[...state.archive];
+  const live=liveTodayRecord();
+  if(live){
+    const i=recs.findIndex(r=>r.date===live.date);
+    if(i>=0) recs[i]=live; else recs.push(live);
+  }
+  return recs.sort((a,b)=> a.date<b.date?-1:1);
+}
+function weekStartKey(){ // بداية الأسبوع = السبت
+  const d=new Date(); const off=(d.getDay()+1)%7; d.setDate(d.getDate()-off);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function periodRecords(){
+  const recs=allRecords();
+  if(reportPeriod==='all') return recs;
+  if(reportPeriod==='week'){ const ws=weekStartKey(); return recs.filter(r=>r.date>=ws); }
+  const now=new Date(), mk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  return recs.filter(r=>r.date.startsWith(mk));
+}
+
+function renderPeriodChips(){
+  const opts=[['week','هذا الأسبوع'],['month','هذا الشهر'],['all','كل الوقت']];
+  const wrap=$('#periodChips'); wrap.innerHTML='';
+  opts.forEach(([id,label])=>{
+    const b=document.createElement('button');
+    b.className='chip'+(reportPeriod===id?' sel':'');
+    if(reportPeriod===id) b.style.background='var(--gold)';
+    b.textContent=label;
+    b.onclick=()=>{ reportPeriod=id; renderReports(); };
+    wrap.appendChild(b);
+  });
+}
+
+function renderReports(){
+  renderPeriodChips();
+  const recs=periodRecords();
+  const sum=k=>recs.reduce((s,r)=>s+Number(r[k]||0),0);
+  const inc=sum('income'), net=sum('net'), trips=sum('trips'), km=sum('km');
+  const days=recs.length||0;
+  $('#rpIncome').textContent=fmt(inc);
+  $('#rpNet').textContent=fmt(net);
+  $('#rpTrips').textContent=trips;
+  $('#rpKm').textContent=fmt(km);
+  $('#rpAvg').textContent= days? fmt(Math.round(inc/days)) : '0';
+  $('#rpPerKm').textContent= km>0? fmt(Math.round((net/km)*10)/10) : '0';
+  const nw=$('#rpNetWrap'); nw.classList.toggle('loss',net<0); nw.classList.toggle('profit',net>=0);
+
+  renderChart();
+  renderInsights(recs);
+  renderStreaks();
+  renderArchiveList();
+}
+
+// رسم بياني لآخر 7 أيام
+function renderChart(){
+  const wrap=$('#incomeChart'); wrap.innerHTML='';
+  const recs=allRecords();
+  const map={}; recs.forEach(r=>map[r.date]=r.income);
+  const days=[];
+  for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    days.push({key,dow:d.getDay(),val:map[key]||0});
+  }
+  const max=Math.max(1,...days.map(d=>d.val));
+  days.forEach(d=>{
+    const h=Math.round((d.val/max)*100);
+    const col=document.createElement('div'); col.className='bar-col';
+    col.innerHTML=`<div class="bar-val">${d.val?fmt(d.val):''}</div>
+      <div class="bar ${d.val===max&&d.val>0?'top':''}" style="height:${d.val?Math.max(h,5):2}%"></div>
+      <div class="bar-lbl">${DOW_AR[d.dow].replace('الإ','إ')}</div>`;
+    wrap.appendChild(col);
+  });
+}
+
+function renderInsights(recs){
+  const box=$('#insights');
+  if(!recs.length){ box.innerHTML='<div class="empty">لا توجد بيانات كافية بعد — سجّل أيامك وبتشوف رؤاك تتكوّن 🌱</div>'; return; }
+  // أفضل تطبيق
+  const apps={}; recs.forEach(r=>{ for(const k in (r.byApp||{})) apps[k]=(apps[k]||0)+r.byApp[k]; });
+  let bestApp=null,bestAppV=0; for(const k in apps) if(apps[k]>bestAppV){bestAppV=apps[k];bestApp=k;}
+  const appName = bestApp? (APPS.find(a=>a.id===bestApp)?.name||bestApp):'—';
+  // أفضل يوم (متوسط)
+  const dowSum={},dowCnt={}; recs.forEach(r=>{ dowSum[r.dow]=(dowSum[r.dow]||0)+r.income; dowCnt[r.dow]=(dowCnt[r.dow]||0)+1; });
+  let bestDow=null,bestAvg=0; for(const k in dowSum){ const avg=dowSum[k]/dowCnt[k]; if(avg>bestAvg){bestAvg=avg;bestDow=k;} }
+  // أفضل وقت
+  const hours={}; recs.forEach(r=>{ for(const h in (r.byHour||{})) hours[h]=(hours[h]||0)+r.byHour[h]; });
+  let bestHour=null,bestHourV=0; for(const h in hours) if(hours[h]>bestHourV){bestHourV=hours[h];bestHour=+h;}
+  const hourTxt = bestHour===null? '—' : fmtHour(bestHour)+' - '+fmtHour((bestHour+1)%24);
+  // ربح/كم
+  const km=recs.reduce((s,r)=>s+Number(r.km||0),0), net=recs.reduce((s,r)=>s+Number(r.net||0),0);
+  const perKm = km>0? fmt(Math.round((net/km)*10)/10)+' ريال/كم' : 'بيانات غير كافية';
+
+  box.innerHTML=`
+    ${insight('🏆','أعلى تطبيق دخلاً', bestApp? `${appName} — ${fmt(bestAppV)} ريال`:'—')}
+    ${insight('📅','أفضل يوم لك', bestDow!==null? `${DOW_AR[bestDow]} — بمعدل ${fmt(Math.round(bestAvg))} ريال`:'—')}
+    ${insight('⏰','أفضل وقت للدخل', hourTxt)}
+    ${insight('⚖️','صافي الربح لكل كيلومتر', perKm)}`;
+}
+function insight(ico,lbl,val){
+  return `<div class="insight"><div class="in-ico">${ico}</div><div class="in-body"><div class="in-lbl">${lbl}</div><div class="in-val">${escapeHtml(String(val))}</div></div></div>`;
+}
+function fmtHour(h){ const ap=h<12?'ص':'م'; let hh=h%12; if(hh===0) hh=12; return hh+' '+ap; }
+
+// الاستمرارية: أيام متتالية (من الأحدث) محققة الشرط
+function renderStreaks(){
+  const recs=allRecords();
+  $('#stkGoal').textContent=trailingStreak(recs,r=>r.goalMet);
+  $('#stkPray').textContent=trailingStreak(recs,r=>r.prayers>=5);
+}
+function trailingStreak(recs,cond){
+  if(!recs.length) return 0;
+  let streak=0, prev=null;
+  for(let i=recs.length-1;i>=0;i--){
+    const r=recs[i];
+    if(prev){ const diff=Math.round((new Date(prev)-new Date(r.date))/86400000); if(diff!==1) break; }
+    if(cond(r)){ streak++; prev=r.date; } else break;
+  }
+  return streak;
+}
+
+function renderArchiveList(){
+  const list=$('#archiveList');
+  const recs=allRecords().slice().reverse().slice(0,14);
+  if(!recs.length){ list.innerHTML='<div class="empty">ما فيه أيام مسجلة بعد</div>'; return; }
+  list.innerHTML='';
+  recs.forEach(r=>{
+    const dt=new Date(r.date);
+    const dayName=DOW_AR[r.dow];
+    const dateTxt=dt.toLocaleDateString('ar-u-ca-gregory-nu-latn',{day:'numeric',month:'short'});
+    const el=document.createElement('div'); el.className='arch-item';
+    el.innerHTML=`
+      <span class="arch-badge">${r.goalMet?'🎯':'•'}</span>
+      <div class="arch-date">
+        <div class="ad-day">${dayName} ${r.date===todayKey()?'(اليوم)':''}</div>
+        <div class="ad-meta">${dateTxt} · ${r.trips} رحلة · ${fmt(r.income)} ريال · 🕌 ${r.prayers}/5</div>
+      </div>
+      <div class="arch-net ${r.net>=0?'profit':'loss'}">${fmt(r.net)}</div>`;
+    list.appendChild(el);
+  });
+}
+
 /* ============ التشغيل ============ */
 function renderAll(){
   renderHeader(); renderHome(); renderPrayers();
   renderAppChips(); renderTrips();
   renderExpChips(); renderExpenses();
   renderHabits(); renderTasks();
+  renderReports();
 }
+
+// أرشفة تلقائية لو دخلنا في يوم جديد وفي بيانات من يوم سابق
+function autoArchiveIfNewDay(){
+  const today=todayKey();
+  if(state.activeDate && state.activeDate!==today){
+    if(dayHasData()){ archiveAndReset(today); toast('تم حفظ يوم أمس في الأرشيف 🌅'); }
+    else { state.activeDate=today; save(); }
+  } else if(!state.activeDate){ state.activeDate=today; save(); }
+}
+
 load();
+autoArchiveIfNewDay();
 applyTheme();
 renderAll();
 showQuote();
