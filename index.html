@@ -112,19 +112,19 @@ header.top{
 
 /* ========================== التبويبات ========================== */
 nav.tabs{
-  position:sticky;top:env(safe-area-inset-top);z-index:40;display:flex;gap:6px;
-  padding:10px 12px;margin:6px 6px 0;
+  position:sticky;top:env(safe-area-inset-top);z-index:40;display:flex;gap:3px;
+  padding:9px 8px;margin:6px 6px 0;
   background:color-mix(in srgb, var(--bg-1) 80%, transparent);
   backdrop-filter:blur(14px);border-radius:18px;
 }
 @supports not (backdrop-filter:blur(1px)){ nav.tabs{background:var(--bg-1);} }
 .tab{
   flex:1;border:none;background:transparent;color:var(--text-soft);
-  padding:9px 1px;border-radius:13px;cursor:pointer;font-family:inherit;
+  padding:8px 0;border-radius:11px;cursor:pointer;font-family:inherit;
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  font-size:.64rem;font-weight:600;transition:all .2s;min-height:54px;justify-content:center;
+  font-size:.58rem;font-weight:600;transition:all .2s;min-height:52px;justify-content:center;
 }
-.tab .ti{font-size:1.2rem;line-height:1;}
+.tab .ti{font-size:1.15rem;line-height:1;}
 .tab.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
 
 /* ========================== الصفحات والبطاقات ========================== */
@@ -369,6 +369,50 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .t-urgent{background:var(--red-soft);color:var(--red);}
 .task.urgent{box-shadow:inset 3px 0 0 0 transparent;}
 
+/* رأس البطاقة مع زر إضافة */
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.card-head .card-title{margin:0;}
+.add-toggle{
+  width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);
+  color:var(--primary);font-size:1.5rem;font-weight:700;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:transform .2s,background .2s;flex-shrink:0;line-height:1;
+}
+.add-toggle:active{transform:scale(.9);}
+.add-toggle.open{background:var(--primary);color:#fff;border-color:transparent;transform:rotate(45deg);}
+.add-panel{overflow:hidden;animation:fade .3s ease;margin-bottom:14px;
+  background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:14px;}
+.add-panel.hidden{display:none;}
+.add-panel input[type="text"],.add-panel input[type="number"]{background:var(--surface);}
+
+/* زر التركيز على المهمة/الهدف */
+.focus-btn{
+  border:none;background:var(--primary-soft);color:var(--primary);width:38px;height:38px;border-radius:11px;
+  cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s;
+}
+.focus-btn:active{transform:scale(.9);}
+.gi-row{display:flex;gap:7px;}
+
+/* بومودورو */
+.pomo{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.pomo-link{
+  width:100%;text-align:center;font-size:.9rem;font-weight:600;color:var(--text-muted);
+  background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:10px 12px;
+  display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;
+}
+.pomo-link .pl-clear{border:none;background:var(--red-soft);color:var(--red);width:24px;height:24px;border-radius:7px;cursor:pointer;font-size:.8rem;flex-shrink:0;}
+.pomo-ring{
+  width:200px;height:200px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:conic-gradient(var(--gold) var(--pct,0%), var(--surface-3) 0);
+  position:relative;transition:background .3s;
+}
+.pomo-ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--surface);}
+.pomo-ring.break{background:conic-gradient(var(--green) var(--pct,0%), var(--surface-3) 0);}
+.pomo-time{font-size:2.6rem;font-weight:700;letter-spacing:-1px;position:relative;z-index:1;font-variant-numeric:tabular-nums;}
+.pomo-mode{font-size:.92rem;color:var(--text-muted);position:relative;z-index:1;font-weight:600;margin-top:2px;}
+.pomo-controls{display:flex;gap:10px;width:100%;}
+.pomo-sessions{font-size:.92rem;color:var(--text-muted);}
+.pomo-sessions b{color:var(--gold);font-size:1.1rem;}
+
 /* التوست */
 #toast{
   position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -423,6 +467,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
     <button class="tab" data-page="expenses"><span class="ti">💸</span>المصروفات</button>
     <button class="tab" data-page="habits"><span class="ti">✅</span>العادات</button>
     <button class="tab" data-page="tasks"><span class="ti">📋</span>المهام</button>
+    <button class="tab" data-page="pomodoro"><span class="ti">⏱️</span>التركيز</button>
     <button class="tab" data-page="reports"><span class="ti">📈</span>التقارير</button>
   </nav>
 
@@ -585,26 +630,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 
     <!-- ============ المهام والأهداف ============ -->
     <section class="page" id="page-tasks">
-      <!-- الأهداف الأسبوعية -->
-      <div class="card">
-        <h2 class="card-title green">🎯 الأهداف الأسبوعية</h2>
-        <div id="goalsList"></div>
-        <div class="sub-add">
-          <input type="text" id="goalName" placeholder="اسم هدف جديد (مثال: تواصلات LinkedIn)" />
-          <div class="mini-label">الفئة</div>
-          <div class="chips" id="goalCatChips"></div>
-          <div class="row2">
-            <input type="number" id="goalTargetInp" inputmode="numeric" placeholder="العدد المستهدف" />
-            <button class="btn-primary" id="addGoalBtn" style="margin-top:0;flex:1.4">➕ إضافة هدف</button>
-          </div>
-        </div>
-      </div>
 
       <!-- المهام -->
       <div class="card">
-        <h2 class="card-title">📋 المهام والمشاريع</h2>
-        <div class="chips cat-filter" id="catFilter"></div>
-        <div class="sub-add">
+        <div class="card-head">
+          <h2 class="card-title">📋 المهام والمشاريع</h2>
+          <button class="add-toggle" id="taskAddToggle" title="إضافة مهمة">＋</button>
+        </div>
+        <div class="add-panel hidden" id="taskAddPanel">
           <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..." />
           <div class="mini-label">الفئة</div>
           <div class="chips" id="taskCatChips"></div>
@@ -613,7 +646,57 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
           <label class="urgent-row"><span>🔴 مهمة عاجلة</span><input type="checkbox" id="taskUrgent" /></label>
           <button class="btn-primary" id="addTaskBtn">➕ إضافة المهمة</button>
         </div>
+        <div class="chips cat-filter" id="catFilter"></div>
         <div id="tasksList"></div>
+      </div>
+
+      <!-- الأهداف الأسبوعية -->
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title green">🎯 الأهداف الأسبوعية</h2>
+          <button class="add-toggle" id="goalAddToggle" title="إضافة هدف">＋</button>
+        </div>
+        <div class="add-panel hidden" id="goalAddPanel">
+          <input type="text" id="goalName" placeholder="اسم هدف جديد (مثال: تواصلات LinkedIn)" />
+          <div class="mini-label">الفئة</div>
+          <div class="chips" id="goalCatChips"></div>
+          <div class="row2">
+            <input type="number" id="goalTargetInp" inputmode="numeric" placeholder="العدد المستهدف" />
+            <button class="btn-primary" id="addGoalBtn" style="margin-top:0;flex:1.4">➕ إضافة هدف</button>
+          </div>
+        </div>
+        <div id="goalsList"></div>
+      </div>
+
+    </section>
+
+    <!-- ============ التركيز (بومودورو) ============ -->
+    <section class="page" id="page-pomodoro">
+      <div class="card">
+        <h2 class="card-title gold">⏱️ مؤقت بومودورو</h2>
+        <div class="pomo">
+          <div class="pomo-link" id="pomoLink"></div>
+          <div class="pomo-ring" id="pomoRing">
+            <div class="pomo-time" id="pomoTime">25:00</div>
+            <div class="pomo-mode" id="pomoMode">تركيز</div>
+          </div>
+          <div class="pomo-controls">
+            <button class="gi-btn" id="pomoReset" title="إعادة">↺</button>
+            <button class="btn-primary" id="pomoStart" style="margin-top:0;flex:2">▶ ابدأ</button>
+            <button class="gi-btn" id="pomoSkip" title="تخطّي">⏭</button>
+          </div>
+          <div class="mini-label" style="align-self:flex-start;margin-top:4px;">مدة جلسة التركيز</div>
+          <div class="chips" id="pomoDurChips" style="justify-content:center;"></div>
+          <div class="pomo-sessions">🍅 جلسات التركيز اليوم: <b id="pomoSessions">0</b></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">💡 كيف تستخدمه</h2>
+        <p style="color:var(--text-muted);font-size:.92rem;line-height:1.9;margin:0;">
+          اختر مدة الجلسة، ثم اضغط ▶ ابدأ للتركيز العام، أو ارجع لصفحة المهام واضغط ⏱️ على مهمة أو هدف لربطه.
+          عند انتهاء جلسة مربوطة بهدف، يزيد تقدّم الهدف تلقائياً، وتسمع نغمة تنبيه وتبدأ راحتك.
+        </p>
       </div>
     </section>
 
@@ -741,6 +824,7 @@ function defaultState(){
     ],
     archive:[],          // أرشيف الأيام السابقة للتقارير
     activeDate:todayKey(),// تاريخ اليوم الذي تخصّه البيانات الحالية
+    pomo:{mode:'focus',running:false,endAt:null,remaining:25*60,focusMin:25,sessions:0,sessionsDate:todayKey(),linkType:null,linkId:null,linkName:''},
   };
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
@@ -764,6 +848,7 @@ function load(){
       goals: Array.isArray(saved.goals)? saved.goals : d.goals,
       archive: Array.isArray(saved.archive)?saved.archive:[],
       activeDate: saved.activeDate || todayKey(),
+      pomo: {...d.pomo, ...(saved.pomo||{})},
     };
   }catch(e){ state = defaultState(); }
 }
@@ -1030,6 +1115,8 @@ function renderTasks(){
   items.sort((a,b)=>{
     const da=isTaskDone(a), db=isTaskDone(b);
     if(da!==db) return da?1:-1;                         // المكتمل تحت
+    const dyA=a.repeat==='daily', dyB=b.repeat==='daily';
+    if(dyA!==dyB) return dyA?-1:1;                       // اليومية فوق
     const ua=a.priority==='urgent', ub=b.priority==='urgent';
     if(ua!==ub) return ua?-1:1;                         // العاجل فوق
     return 0;
@@ -1051,10 +1138,12 @@ function renderTasks(){
           ${t.priority==='urgent'?'<span class="t-urgent">🔴 عاجلة</span>':''}
         </div>
       </div>
+      <button class="focus-btn" title="ركّز على هذي المهمة">⏱️</button>
       <button class="del-btn">🗑️</button>`;
     const toggle=()=>{ toggleTask(t); save(); renderTasks(); };
     el.querySelector('.checkbox').onclick=toggle;
     el.querySelector('.t-text').onclick=toggle;
+    el.querySelector('.focus-btn').onclick=()=>linkPomo('task',t.id,t.text);
     el.querySelector('.del-btn').onclick=()=>{ state.tasks=state.tasks.filter(x=>x.id!==t.id); save(); renderTasks(); toast('تم حذف المهمة'); };
     list.appendChild(el);
   });
@@ -1092,9 +1181,11 @@ function renderGoals(){
       <div class="gi-controls">
         <button class="gi-btn minus">−</button>
         <button class="gi-btn plus">＋ سجّل تقدّم</button>
+        <button class="focus-btn" title="ركّز على هذا الهدف">⏱️</button>
       </div>`;
     el.querySelector('.plus').onclick=()=>{ g.count++; const reached=g.count===g.target; save(); renderGoals(); if(reached) toast('🎉 مبروك! حققت هدف: '+g.name); };
     el.querySelector('.minus').onclick=()=>{ g.count=Math.max(0,g.count-1); save(); renderGoals(); };
+    el.querySelector('.focus-btn').onclick=()=>linkPomo('goal',g.id,g.name);
     el.querySelector('.gi-del').onclick=()=>{ state.goals=state.goals.filter(x=>x.id!==g.id); save(); renderGoals(); toast('تم حذف الهدف'); };
     list.appendChild(el);
   });
@@ -1111,6 +1202,160 @@ function addGoal(){
 }
 $('#addGoalBtn').onclick=addGoal;
 $('#goalTargetInp').addEventListener('keydown',e=>{ if(e.key==='Enter') addGoal(); });
+
+/* ============ أزرار الإضافة المنبثقة ============ */
+function setupAddToggle(btnId,panelId){
+  const btn=$('#'+btnId), panel=$('#'+panelId);
+  btn.onclick=()=>{ const open=panel.classList.toggle('hidden')===false; btn.classList.toggle('open',open); if(open) panel.querySelector('input')?.focus(); };
+}
+setupAddToggle('taskAddToggle','taskAddPanel');
+setupAddToggle('goalAddToggle','goalAddPanel');
+
+/* ============ مؤقت بومودورو ============ */
+const POMO_LABEL={focus:'تركيز 🍅', short:'راحة قصيرة ☕', long:'راحة طويلة 🌿'};
+const POMO_DUROPTS=[15,25,50];
+let pomoTick=null, audioCtx=null;
+
+function pomoDur(mode){
+  if(mode==='focus') return (state.pomo.focusMin||25)*60;
+  return mode==='short' ? 5*60 : 15*60;
+}
+function pomoSecondsLeft(){
+  const p=state.pomo;
+  if(p.running && p.endAt) return Math.max(0, Math.round((p.endAt-Date.now())/1000));
+  return p.remaining;
+}
+function fmtClock(s){ const m=Math.floor(s/60), ss=s%60; return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+function stopTick(){ if(pomoTick){ clearInterval(pomoTick); pomoTick=null; } }
+
+/* نغمة تنبيه عبر Web Audio */
+function ensureAudio(){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }catch(e){} }
+function playChime(kind){
+  if(!audioCtx) return;
+  try{
+    const now=audioCtx.currentTime;
+    const notes = kind==='focusDone' ? [660,880,1046] : [880,587];
+    notes.forEach((f,i)=>{
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(audioCtx.destination);
+      const t=now+i*0.2;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.3,t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.19);
+      o.start(t); o.stop(t+0.2);
+    });
+  }catch(e){}
+}
+
+function linkPomo(type,id,name){
+  state.pomo.linkType=type; state.pomo.linkId=id; state.pomo.linkName=name;
+  save(); updatePomoUI();
+  document.querySelector('.tab[data-page="pomodoro"]').click();
+  toast((type==='goal'?'🎯 ':'📋 ')+'ربطنا المؤقت بـ: '+name);
+}
+function clearPomoLink(){ state.pomo.linkType=null; state.pomo.linkId=null; state.pomo.linkName=''; save(); updatePomoUI(); }
+
+function pomoStart(){
+  const p=state.pomo;
+  if(p.running) return;
+  ensureAudio();
+  if(p.remaining<=0) p.remaining=pomoDur(p.mode);
+  p.endAt=Date.now()+p.remaining*1000; p.running=true; save();
+  runPomoTick(); updatePomoUI();
+}
+function pomoPause(){
+  const p=state.pomo;
+  p.remaining=pomoSecondsLeft(); p.running=false; p.endAt=null; save();
+  stopTick(); updatePomoUI();
+}
+function pomoReset(){
+  const p=state.pomo;
+  p.running=false; p.endAt=null; p.remaining=pomoDur(p.mode); save();
+  stopTick(); updatePomoUI();
+}
+/* الانتقال للطور التالي. opts={count, chime} */
+function pomoNext(opts){
+  const p=state.pomo; stopTick();
+  if(p.mode==='focus'){
+    if(opts.count){
+      if(p.sessionsDate!==todayKey()){ p.sessions=0; p.sessionsDate=todayKey(); }
+      p.sessions++;
+      if(p.linkType==='goal' && p.linkId){
+        const g=state.goals.find(x=>x.id===p.linkId);
+        if(g){ syncGoalWeek(g); g.count++; if(g.count===g.target) setTimeout(()=>toast('🎉 حققت هدف: '+g.name),500); }
+      }
+      toast('🍅 خلّصت جلسة تركيز! خذ راحتك');
+    }
+    p.mode = (p.sessions>0 && p.sessions%4===0) ? 'long' : 'short';
+    if(opts.chime) playChime('focusDone');
+    try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
+  } else {
+    p.mode='focus';
+    if(opts.chime){ playChime('breakDone'); toast('انتهت الراحة، يلا نركّز 💪'); }
+    try{ navigator.vibrate && navigator.vibrate(200); }catch(e){}
+  }
+  p.running=false; p.endAt=null; p.remaining=pomoDur(p.mode); save();
+  renderGoals(); updatePomoUI();
+}
+function runPomoTick(){
+  stopTick();
+  pomoTick=setInterval(()=>{
+    if(!state.pomo.running){ stopTick(); return; }
+    if(pomoSecondsLeft()<=0){ pomoNext({count:true,chime:true}); return; }
+    paintPomoTime();
+  },1000);
+}
+function paintPomoTime(){
+  const left=pomoSecondsLeft();
+  $('#pomoTime').textContent=fmtClock(left);
+  const total=pomoDur(state.pomo.mode);
+  const pct=Math.min(100, total>0?((total-left)/total)*100:0);
+  $('#pomoRing').style.setProperty('--pct', pct+'%');
+}
+function renderPomoDurChips(){
+  const wrap=$('#pomoDurChips'); if(!wrap) return; wrap.innerHTML='';
+  POMO_DUROPTS.forEach(min=>{
+    const sel=(state.pomo.focusMin||25)===min;
+    const b=document.createElement('button');
+    b.className='chip'+(sel?' sel':'');
+    if(sel) b.style.background='var(--gold)';
+    b.textContent=min+' دقيقة';
+    b.onclick=()=>{
+      state.pomo.focusMin=min;
+      if(state.pomo.mode==='focus' && !state.pomo.running){ state.pomo.remaining=pomoDur('focus'); }
+      save(); updatePomoUI();
+    };
+    wrap.appendChild(b);
+  });
+}
+function updatePomoUI(){
+  const p=state.pomo;
+  if(p.sessionsDate!==todayKey()){ p.sessions=0; p.sessionsDate=todayKey(); save(); }
+  $('#pomoMode').textContent=POMO_LABEL[p.mode];
+  $('#pomoSessions').textContent=p.sessions;
+  $('#pomoStart').innerHTML = p.running?'⏸ إيقاف مؤقت':'▶ ابدأ';
+  $('#pomoRing').classList.toggle('break', p.mode!=='focus');
+  const link=$('#pomoLink');
+  if(p.linkType){
+    link.innerHTML=`<span>${p.linkType==='goal'?'🎯':'📋'} ${escapeHtml(p.linkName)}</span><button class="pl-clear" title="إلغاء الربط">✕</button>`;
+    link.querySelector('.pl-clear').onclick=clearPomoLink;
+  } else { link.textContent='تركيز عام (غير مربوط — اضغط ⏱️ على مهمة أو هدف)'; }
+  renderPomoDurChips();
+  paintPomoTime();
+}
+$('#pomoStart').onclick=()=>{ state.pomo.running?pomoPause():pomoStart(); };
+$('#pomoReset').onclick=pomoReset;
+$('#pomoSkip').onclick=()=>pomoNext({count:false,chime:false});
+
+// استئناف الحالة عند فتح التطبيق
+function initPomo(){
+  const p=state.pomo;
+  if(p.running && p.endAt){
+    if(pomoSecondsLeft()<=0){ pomoNext({count:true,chime:false}); }   // خلصت وأنا غايب
+    else { runPomoTick(); }
+  }
+  updatePomoUI();
+}
 
 /* ============ الأرشفة (تحفظ اليوم قبل مسحه للتقارير) ============ */
 function buildDayRecord(dateKey){
@@ -1372,6 +1617,7 @@ load();
 autoArchiveIfNewDay();
 applyTheme();
 renderAll();
+initPomo();
 showQuote();
 setInterval(showQuote, 7000);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
