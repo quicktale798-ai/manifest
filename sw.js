@@ -1,5 +1,5 @@
 /* Service Worker — يخلّي التطبيق يشتغل بدون إنترنت ولا يتوقف */
-const CACHE = 'hayati-v1';
+const CACHE = 'hayati-v2';
 const CORE = [
   'index.html',
   'manifest.json',
