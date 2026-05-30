@@ -244,6 +244,11 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .li-amount{font-weight:700;font-size:1.05rem;}
 .li-amount.red{color:var(--red);}
 .badge{font-size:.72rem;font-weight:700;color:#fff;padding:3px 9px;border-radius:99px;}
+.app-logo{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;color:#fff;flex-shrink:0;}
+.chip .app-logo{width:24px;height:24px;font-size:.72rem;margin-inline-end:2px;}
+.pay-tag{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;display:inline-flex;align-items:center;gap:3px;}
+.li-note-add{border:none;background:var(--surface-3);color:var(--text-muted);font-family:inherit;font-size:.78rem;padding:4px 10px;border-radius:99px;cursor:pointer;margin-top:5px;}
+.li-note-add:active{background:var(--primary-soft);color:var(--primary);}
 .li-meta{font-size:.78rem;color:var(--text-muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
 .li-note{font-size:.82rem;color:var(--text-soft);margin-top:3px;}
 .del-btn{
@@ -358,6 +363,25 @@ input[type="time"]:focus{border-color:var(--primary);}
 .gi-task.done .gt-text{text-decoration:line-through;color:var(--text-soft);}
 .gi-task .gt-text{flex:1;cursor:pointer;}
 .gi-empty{font-size:.78rem;color:var(--text-soft);margin-top:8px;font-style:italic;}
+/* استمرارية العادات */
+.hs-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);margin-bottom:8px;}
+.hs-name{font-weight:600;font-size:.92rem;}
+.hs-streak{font-weight:700;font-size:.88rem;color:var(--gold);}
+/* قاموس الكلمات */
+.eng-count{font-size:.82rem;color:var(--text-muted);font-weight:600;margin-bottom:11px;}
+.eng-word{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);margin-bottom:7px;}
+.ew-text{flex:1;font-weight:500;font-size:.92rem;word-break:break-word;}
+.ew-date{font-size:.72rem;color:var(--text-soft);}
+.ew-del{width:30px;height:30px;font-size:.85rem;border-radius:9px;background:transparent;color:var(--text-soft);flex-shrink:0;}
+.ew-del:active{background:var(--red-soft);color:var(--red);}
+/* تقسيم الدفع */
+.pay-split-bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin-bottom:14px;background:var(--surface-3);}
+.pay-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;min-width:0;transition:width .6s;}
+.pay-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);margin-bottom:8px;}
+.pay-row .pr-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.pay-row .pr-name{flex:1;font-weight:600;font-size:.92rem;}
+.pay-row .pr-amt{font-weight:700;}
+.pay-row .pr-pct{font-size:.78rem;color:var(--text-muted);min-width:42px;text-align:left;}
 .load-pack-btn{
   width:100%;margin-top:14px;border:1px dashed var(--border);background:var(--surface-2);
   color:var(--text-muted);font-family:inherit;font-size:.92rem;font-weight:600;padding:14px;
@@ -414,6 +438,8 @@ input[type="time"]:focus{border-color:var(--primary);}
 /* مودال تعديل المهمة */
 #editModal{position:fixed;inset:0;background:rgba(5,12,24,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px;}
 #editModal.show{display:flex;animation:fade .25s;}
+#noteModal{position:fixed;inset:0;background:rgba(5,12,24,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px;}
+#noteModal.show{display:flex;animation:fade .25s;}
 .edit-box{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;max-width:380px;width:100%;box-shadow:var(--shadow);max-height:85vh;overflow-y:auto;}
 .edit-box h3{margin:0 0 16px;font-size:1.15rem;display:flex;align-items:center;gap:8px;}
 .edit-box .mini-label{margin-top:12px;}
@@ -449,6 +475,9 @@ input[type="time"]:focus{border-color:var(--primary);}
 }
 .bar.top{background:linear-gradient(180deg,var(--green),color-mix(in srgb,var(--green) 55%, transparent));}
 .bar-lbl{font-size:.7rem;color:var(--text-soft);font-weight:600;}
+.week-compare{margin-top:14px;padding:12px;border-radius:var(--radius-sm);text-align:center;font-weight:700;font-size:.92rem;}
+.week-compare.up{background:var(--green-soft);color:var(--green);}
+.week-compare.down{background:var(--red-soft);color:var(--red);}
 .insight{
   display:flex;align-items:center;gap:12px;background:var(--surface-2);border:1px solid var(--border-2);
   border-radius:var(--radius-sm);padding:13px;margin-bottom:9px;
@@ -689,8 +718,8 @@ input[type="time"]:focus{border-color:var(--primary);}
           <input type="number" id="tripKm" inputmode="decimal" placeholder="مثال: 12" />
         </div>
         <div class="field">
-          <label>ملاحظة (اختياري)</label>
-          <input type="text" id="tripNote" placeholder="مثال: رحلة المطار" />
+          <label>طريقة الدفع</label>
+          <div class="chips" id="payChips"></div>
         </div>
         <button class="btn-primary" id="addTripBtn">➕ تسجيل الرحلة</button>
       </div>
@@ -750,8 +779,11 @@ input[type="time"]:focus{border-color:var(--primary);}
 
     <!-- ============ العادات ============ -->
     <section class="page" id="page-habits">
+      <!-- شريط الأيام -->
+      <div class="day-strip" id="habitDayStrip"></div>
+
       <div class="card">
-        <h2 class="card-title green">✅ العادات اليومية</h2>
+        <h2 class="card-title green" id="habitDayTitle">✅ العادات اليومية</h2>
 
         <div class="habit" data-habit="walk">
           <div class="checkbox">✓</div>
@@ -787,14 +819,21 @@ input[type="time"]:focus{border-color:var(--primary);}
         <div class="habits-count">المكتمل: <span id="habitsDone">0</span>/5</div>
       </div>
 
+      <!-- استمرارية العادات -->
       <div class="card">
-        <h2 class="card-title">🔤 كلمات اليوم الإنجليزية</h2>
-        <div class="eng-box">
-          <textarea id="engWords" placeholder="اكتب 5 كلمات جديدة هنا حتى لا تنساها..."></textarea>
-          <div class="eng-row">
-            <button class="btn-primary green" id="saveWordsBtn">💾 حفظ الكلمات</button>
-          </div>
+        <h2 class="card-title gold">🔥 استمرارية العادات</h2>
+        <div id="habitStreaks"></div>
+      </div>
+
+      <!-- قاموس الكلمات الإنجليزية -->
+      <div class="card">
+        <h2 class="card-title">🔤 قاموسي الإنجليزي</h2>
+        <div class="add-row">
+          <input type="text" id="engWordInput" placeholder="أضف كلمة جديدة + معناها" />
+          <button class="add-btn" id="engWordAdd">+</button>
         </div>
+        <div class="eng-count" id="engCount"></div>
+        <div id="engWordsList"></div>
       </div>
     </section>
 
@@ -914,8 +953,19 @@ input[type="time"]:focus{border-color:var(--primary);}
       </div>
 
       <div class="card">
+        <h2 class="card-title">📅 دخل آخر 4 أسابيع</h2>
+        <div class="chart" id="weeksChart"></div>
+        <div id="weekCompare"></div>
+      </div>
+
+      <div class="card">
         <h2 class="card-title gold">💡 رؤى تساعدك تكسب أكثر</h2>
         <div id="insights"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">💳 تقسيم الدخل حسب الدفع</h2>
+        <div id="paySplit"></div>
       </div>
 
       <div class="card">
@@ -941,6 +991,17 @@ input[type="time"]:focus{border-color:var(--primary);}
       </div>
     </section>
   </main>
+</div>
+
+<div id="noteModal">
+  <div class="edit-box">
+    <h3>📝 ملاحظة الرحلة</h3>
+    <input type="text" id="noteInput" placeholder="مثال: رحلة المطار، زحمة، إكرامية..." />
+    <div class="edit-actions">
+      <button class="edit-cancel" id="noteCancel">إلغاء</button>
+      <button class="edit-save" id="noteSave">💾 حفظ</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -1001,12 +1062,18 @@ const STORE = 'hayati_dashboard_v1';
 
 /* بيانات التطبيقات والمصروفات */
 const APPS = [
-  {id:'uber',  name:'Uber',     color:'#1f2937'},
-  {id:'bolt',  name:'Bolt',     color:'#16a34a'},
-  {id:'indrive',name:'InDrive', color:'#84cc16'},
-  {id:'kayan', name:'Kayan',    color:'#7c3aed'},
-  {id:'eco',   name:'Eco Ride', color:'#0891b2'},
+  {id:'uber',  name:'Uber',     glyph:'U', color:'#000000'},
+  {id:'bolt',  name:'Bolt',     glyph:'⚡', color:'#34d186'},
+  {id:'indrive',name:'inDrive', glyph:'in',color:'#a8e600'},
+  {id:'kayan', name:'Kayan',    glyph:'ك', color:'#7c3aed'},
+  {id:'eco',   name:'Eco Ride', glyph:'🌿', color:'#0891b2'},
 ];
+const PAYMENTS = [
+  {id:'cash',    name:'كاش',       emoji:'💵', color:'#16a34a'},
+  {id:'network', name:'شبكة',      emoji:'💳', color:'#2563eb'},
+  {id:'app',     name:'عبر التطبيق',emoji:'📱', color:'#7c3aed'},
+];
+function paymentById(id){ return PAYMENTS.find(p=>p.id===id)||PAYMENTS[0]; }
 const EXPENSE_TYPES = [
   {id:'fuel',     name:'وقود',        emoji:'⛽', color:'#ef4444'},
   {id:'food',     name:'أكل',         emoji:'🍔', color:'#f59e0b'},
@@ -1090,8 +1157,8 @@ function defaultState(){
   return {
     theme:null,
     byDay:{}, // { 'YYYY-MM-DD': {trips:[],expenses:[],prayers:{...}} }
-    habits:{walk:false,walkMin:15,read:false,charity:false,english:false,home:false},
-    engWords:'',
+    habitsMeta:{walkMin:15}, // إعدادات ثابتة (مدة المشي الافتراضية)
+    engWords:[],
     tasks:weeklyPack().tasks,
     goals:weeklyPack().goals,
     archive:[],          // أرشيف الأيام السابقة للتقارير
@@ -1112,8 +1179,8 @@ function load(){
     state = {
       theme: saved.theme ?? null,
       byDay: (saved.byDay && typeof saved.byDay==='object') ? saved.byDay : {},
-      habits: {...d.habits, ...(saved.habits||{})},
-      engWords: saved.engWords ?? '',
+      habitsMeta: {walkMin:15, ...(saved.habitsMeta||{})},
+      engWords: Array.isArray(saved.engWords)? saved.engWords : (typeof saved.engWords==='string' && saved.engWords.trim()? saved.engWords.split('\n').filter(Boolean).map(w=>({id:uid(),text:w,date:saved.activeDate||todayKey()})) : []),
       tasks: Array.isArray(saved.tasks)? saved.tasks.map(t=>{
         const o={cat:'work',repeat:'none',priority:'normal',done:false,lastDone:'',goalId:'',time:'',dur:0,...t};
         const map={job:'work',linkedin:'work',personal:'growth',general:'work'};
@@ -1137,12 +1204,13 @@ function load(){
       pomo: {...d.pomo, ...(saved.pomo||{})},
     };
     // ترقية: لو فيه بيانات قديمة مسطّحة، انقلها لليوم النشط
-    if(Array.isArray(saved.trips)||Array.isArray(saved.expenses)||saved.prayers){
+    if(Array.isArray(saved.trips)||Array.isArray(saved.expenses)||saved.prayers||saved.habits){
       const dk=saved.activeDate||todayKey();
-      if(!state.byDay[dk]) state.byDay[dk]={trips:[],expenses:[],prayers:{}};
+      if(!state.byDay[dk]) state.byDay[dk]={trips:[],expenses:[],prayers:{},habits:{}};
       if(Array.isArray(saved.trips)) state.byDay[dk].trips=saved.trips;
       if(Array.isArray(saved.expenses)) state.byDay[dk].expenses=saved.expenses;
       if(saved.prayers) state.byDay[dk].prayers=saved.prayers;
+      if(saved.habits){ state.byDay[dk].habits={walk:!!saved.habits.walk,read:!!saved.habits.read,charity:!!saved.habits.charity,english:!!saved.habits.english,home:!!saved.habits.home}; if(saved.habits.walkMin) state.habitsMeta.walkMin=saved.habits.walkMin; }
     }
   }catch(e){ state = defaultState(); }
 }
@@ -1194,11 +1262,14 @@ document.querySelectorAll('.tab').forEach(tab=>{
 
 /* ============ الحسابات ============ */
 let tripDate=todayKey(); // اليوم المختار في قسم الرحلات
-function emptyDay(){ return {trips:[],expenses:[],prayers:{fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false}}; }
-function dayOf(dk){ dk=dk||tripDate; if(!state.byDay[dk]) state.byDay[dk]=emptyDay(); const o=state.byDay[dk]; if(!Array.isArray(o.trips))o.trips=[]; if(!Array.isArray(o.expenses))o.expenses=[]; if(!o.prayers)o.prayers={fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false}; return o; }
+function emptyDay(){ return {trips:[],expenses:[],prayers:{fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false},habits:{walk:false,read:false,charity:false,english:false,home:false}}; }
+function dayOf(dk){ dk=dk||tripDate; if(!state.byDay[dk]) state.byDay[dk]=emptyDay(); const o=state.byDay[dk]; if(!Array.isArray(o.trips))o.trips=[]; if(!Array.isArray(o.expenses))o.expenses=[]; if(!o.prayers)o.prayers={fajr:false,dhuhr:false,asr:false,maghrib:false,isha:false}; if(!o.habits)o.habits={walk:false,read:false,charity:false,english:false,home:false}; return o; }
 function dayTrips(dk){ return dayOf(dk).trips; }
 function dayExpenses(dk){ return dayOf(dk).expenses; }
 function dayPrayers(dk){ return dayOf(dk).prayers; }
+function dayHabits(dk){ return dayOf(dk).habits; }
+const HABIT_KEYS=['walk','read','charity','english','home'];
+function habitCount(dk){ const h=dayHabits(dk); return HABIT_KEYS.filter(k=>h[k]).length; }
 
 const totalIncome = (dk)=> dayTrips(dk).reduce((s,t)=>s+Number(t.amount||0),0);
 const totalExpense = (dk)=> dayExpenses(dk).reduce((s,e)=>s+Number(e.amount||0),0);
@@ -1224,7 +1295,7 @@ function renderHome(){
   const tasksDone=todayTasks.filter(t=>isTaskDone(t,dk)).length;
   const tasksTotal=todayTasks.length;
   const prayers=prayerCount(dk);
-  const habitsDone=['walk','read','charity','english','home'].filter(k=>state.habits[k]).length;
+  const habitsDone=habitCount(dk);
   $('#tsTasks').textContent=tasksDone+'/'+tasksTotal;
   $('#tsPrayers').textContent=prayers+'/5';
   $('#tsHabits').textContent=habitsDone+'/5';
@@ -1313,15 +1384,28 @@ function renderPrayers(){
 }
 
 /* ============ الرحلات ============ */
-let selApp=APPS[0].id;
+let selApp=APPS[0].id, selPay=PAYMENTS[0].id;
 function renderAppChips(){
   const wrap=$('#appChips'); wrap.innerHTML='';
   APPS.forEach(a=>{
     const sel=selApp===a.id;
     const b=document.createElement('button');
-    b.className='chip'+(sel?' sel':''); b.textContent=a.name;
+    b.className='chip'+(sel?' sel':'');
+    b.innerHTML=`<span class="app-logo" style="background:${a.color}">${a.glyph}</span>${a.name}`;
     if(sel) b.style.background=a.color;
     b.onclick=()=>{ selApp=a.id; renderAppChips(); };
+    wrap.appendChild(b);
+  });
+}
+function renderPayChips(){
+  const wrap=$('#payChips'); if(!wrap) return; wrap.innerHTML='';
+  PAYMENTS.forEach(p=>{
+    const sel=selPay===p.id;
+    const b=document.createElement('button');
+    b.className='chip'+(sel?' sel':'');
+    b.innerHTML=`<span class="c-emoji">${p.emoji}</span>${p.name}`;
+    if(sel) b.style.background=p.color;
+    b.onclick=()=>{ selPay=p.id; renderPayChips(); };
     wrap.appendChild(b);
   });
 }
@@ -1330,12 +1414,12 @@ $('#addTripBtn').onclick=()=>{
   if(!amount||amount<=0){ toast('اكتب مبلغ الرحلة أول 🙏'); return; }
   const app=APPS.find(a=>a.id===selApp);
   dayTrips(tripDate).push({
-    id:uid(), app:app.id, appName:app.name, color:app.color,
+    id:uid(), app:app.id, appName:app.name, color:app.color, glyph:app.glyph,
     amount:amount, km:parseFloat($('#tripKm').value)||0,
-    note:$('#tripNote').value.trim(), time:nowTime(), hour:new Date().getHours(),
+    pay:selPay, note:'', time:nowTime(), hour:new Date().getHours(),
   });
   save();
-  $('#tripAmount').value=''; $('#tripKm').value=''; $('#tripNote').value='';
+  $('#tripAmount').value=''; $('#tripKm').value='';
   renderTrips(); renderTripDay(); renderHome();
   toast('تم تسجيل الرحلة ✅');
 };
@@ -1348,21 +1432,32 @@ function renderTrips(){
   if(!trips.length){ list.innerHTML='<div class="empty">لا توجد رحلات مسجلة في هذا اليوم</div>'; return; }
   list.innerHTML='';
   trips.forEach((t,i)=>{
+    const glyph=t.glyph || (APPS.find(a=>a.id===t.app)||{}).glyph || '🚗';
+    const pay=paymentById(t.pay);
     const el=document.createElement('div'); el.className='list-item';
     el.innerHTML=`
-      <div class="li-num">#${i+1}</div>
+      <span class="app-logo" style="background:${t.color}">${glyph}</span>
       <div class="li-body">
         <div class="li-top">
           <span class="li-amount">${fmt(t.amount)} ريال</span>
-          <span class="badge" style="background:${t.color}">${t.appName}</span>
+          <span class="pay-tag" style="background:${hexA(pay.color,.15)};color:${pay.color}">${pay.emoji} ${pay.name}</span>
         </div>
         <div class="li-meta"><span>🕒 ${t.time}</span>${t.km?`<span>🛣️ ${fmt(t.km)} كم</span>`:''}</div>
         ${t.note?`<div class="li-note">📝 ${escapeHtml(t.note)}</div>`:''}
+        ${!t.note?`<button class="li-note-add">📝 إضافة ملاحظة</button>`:''}
       </div>
       <button class="del-btn" title="حذف">🗑️</button>`;
+    const noteBtn=el.querySelector('.li-note-add');
+    if(noteBtn) noteBtn.onclick=()=>addTripNote(t.id);
+    const noteEl=el.querySelector('.li-note');
+    if(noteEl) noteEl.style.cursor='pointer', noteEl.onclick=()=>addTripNote(t.id);
     el.querySelector('.del-btn').onclick=()=>{ const arr=dayTrips(tripDate); const idx=arr.findIndex(x=>x.id===t.id); if(idx>=0)arr.splice(idx,1); save(); renderTrips(); renderTripDay(); renderHome(); toast('تم حذف الرحلة'); };
     list.appendChild(el);
   });
+}
+function addTripNote(id){
+  const arr=dayTrips(tripDate); const t=arr.find(x=>x.id===id); if(!t) return;
+  openNoteModal(t.note||'', (val)=>{ t.note=val.trim(); save(); renderTrips(); toast(val.trim()?'تم حفظ الملاحظة ✅':'تم مسح الملاحظة'); });
 }
 
 /* ============ المصروفات ============ */
@@ -1420,23 +1515,95 @@ function renderExpenses(){
   });
 }
 
-/* ============ العادات ============ */
-function renderHabits(){
-  document.querySelectorAll('.habit').forEach(h=>{
-    const key=h.dataset.habit;
-    h.classList.toggle('on', !!state.habits[key]);
-  });
-  $('#walkMin').textContent=state.habits.walkMin;
-  const done=['walk','read','charity','english','home'].filter(k=>state.habits[k]).length;
-  $('#habitsDone').textContent=done;
-  $('#engWords').value=state.engWords;
+/* ============ العادات (يومية) ============ */
+let habitDate=todayKey();
+function renderHabitDayStrip(){
+  const strip=$('#habitDayStrip'); if(!strip) return; strip.innerHTML='';
+  const names=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+  const ws=new Date(weekStartKey()+'T00:00:00');
+  for(let i=0;i<7;i++){
+    const d=new Date(ws); d.setDate(ws.getDate()+i);
+    const key=dateKeyFromObj(d);
+    const cell=document.createElement('div');
+    cell.className='day-cell'+(key===habitDate?' sel':'')+(key===todayKey()?' today':'');
+    const c=habitCount(key);
+    cell.innerHTML=`<span class="dc-name">${names[d.getDay()]}</span><span class="dc-num">${d.getDate()}</span>${c>0?`<span class="dc-dot" style="background:var(--green)"></span>`:''}`;
+    cell.onclick=()=>{ habitDate=key; renderHabits(); };
+    strip.appendChild(cell);
+  }
 }
-document.querySelectorAll('.habit').forEach(h=>{
-  h.onclick=()=>{ const k=h.dataset.habit; state.habits[k]=!state.habits[k]; save(); renderHabits(); };
+function renderHabits(){
+  renderHabitDayStrip();
+  const h=dayHabits(habitDate);
+  document.querySelectorAll('.habit').forEach(el=>{
+    const key=el.dataset.habit;
+    el.classList.toggle('on', !!h[key]);
+  });
+  $('#walkMin').textContent=state.habitsMeta.walkMin;
+  $('#habitsDone').textContent=habitCount(habitDate);
+  // عنوان اليوم
+  const isToday=habitDate===todayKey();
+  $('#habitDayTitle').textContent = isToday ? '✅ العادات اليومية' : '✅ عادات '+new Date(habitDate+'T00:00:00').toLocaleDateString('ar-u-ca-gregory-nu-latn',{weekday:'long',day:'numeric',month:'long'});
+  renderHabitStreaks();
+  renderEngWords();
+}
+function renderHabitStreaks(){
+  const box=$('#habitStreaks'); if(!box) return;
+  const labels={walk:'🚶 المشي',read:'📖 القراءة',charity:'🤲 الصدقة',english:'🔤 الإنجليزية',home:'🏡 ترتيب المنزل'};
+  // اجمع كل التواريخ اللي فيها عادات، مرتّبة
+  box.innerHTML='';
+  HABIT_KEYS.forEach(k=>{
+    const streak=habitTrailingStreak(k);
+    const row=document.createElement('div'); row.className='hs-row';
+    row.innerHTML=`<span class="hs-name">${labels[k]}</span><span class="hs-streak">${streak>0?'🔥 '+streak+' يوم':'—'}</span>`;
+    box.appendChild(row);
+  });
+}
+function habitTrailingStreak(key){
+  // عدّ الأيام المتتالية المنجزة انتهاءً باليوم (أو أمس لو اليوم ما تم)
+  let streak=0;
+  let d=new Date(todayKey()+'T00:00:00');
+  // لو اليوم غير منجز، ابدأ من أمس حتى لا تنكسر السلسلة قبل نهاية اليوم
+  if(!(state.byDay[dateKeyFromObj(d)]&&state.byDay[dateKeyFromObj(d)].habits&&state.byDay[dateKeyFromObj(d)].habits[key])){
+    d.setDate(d.getDate()-1);
+  }
+  for(let i=0;i<400;i++){
+    const key2=dateKeyFromObj(d);
+    const o=state.byDay[key2];
+    if(o&&o.habits&&o.habits[key]){ streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+document.querySelectorAll('.habit').forEach(el=>{
+  el.onclick=()=>{ const k=el.dataset.habit; const h=dayHabits(habitDate); h[k]=!h[k]; save(); renderHabits(); renderHome(); };
 });
-$('#walkPlus').onclick=(e)=>{ e.stopPropagation(); state.habits.walkMin+=5; save(); renderHabits(); };
-$('#walkMinus').onclick=(e)=>{ e.stopPropagation(); state.habits.walkMin=Math.max(0,state.habits.walkMin-5); save(); renderHabits(); };
-$('#saveWordsBtn').onclick=()=>{ state.engWords=$('#engWords').value; save(); toast('تم حفظ الكلمات 💾'); };
+$('#walkPlus').onclick=(e)=>{ e.stopPropagation(); state.habitsMeta.walkMin+=5; save(); renderHabits(); };
+$('#walkMinus').onclick=(e)=>{ e.stopPropagation(); state.habitsMeta.walkMin=Math.max(0,state.habitsMeta.walkMin-5); save(); renderHabits(); };
+
+/* ============ قاموس الكلمات الإنجليزية ============ */
+function renderEngWords(){
+  const list=$('#engWordsList'); if(!list) return;
+  $('#engCount').textContent = state.engWords.length? ('مجموع كلماتك: '+state.engWords.length+' كلمة 📚') : '';
+  if(!state.engWords.length){ list.innerHTML='<div class="empty">ابدأ بإضافة كلماتك الإنجليزية لتتراكم وتراجعها</div>'; return; }
+  list.innerHTML='';
+  // الأحدث أولاً
+  state.engWords.slice().reverse().forEach(w=>{
+    const el=document.createElement('div'); el.className='eng-word';
+    const dt=w.date? new Date(w.date+'T00:00:00').toLocaleDateString('ar-u-ca-gregory-nu-latn',{day:'numeric',month:'short'}):'';
+    el.innerHTML=`<span class="ew-text">${escapeHtml(w.text)}</span><span class="ew-date">${dt}</span><button class="del-btn ew-del">🗑️</button>`;
+    el.querySelector('.ew-del').onclick=()=>{ state.engWords=state.engWords.filter(x=>x.id!==w.id); save(); renderEngWords(); toast('تم حذف الكلمة'); };
+    list.appendChild(el);
+  });
+}
+function addEngWord(){
+  const v=$('#engWordInput').value.trim();
+  if(!v){ toast('اكتب الكلمة 🙏'); return; }
+  state.engWords.push({id:uid(),text:v,date:todayKey()});
+  save(); $('#engWordInput').value=''; renderEngWords(); toast('تمت إضافة الكلمة ✅');
+}
+$('#engWordAdd').onclick=addEngWord;
+$('#engWordInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addEngWord(); });
 
 /* ============ المهام والأهداف ============ */
 const CATS=[
@@ -1946,24 +2113,25 @@ function initPomo(){
 /* ============ الأرشفة (تُبنى من بيانات الأيام مباشرة) ============ */
 function buildDayRecord(dateKey){
   const inc=totalIncome(dateKey), exp=totalExpense(dateKey);
-  const byApp={}, byHour={};
+  const byApp={}, byHour={}, byPay={};
   dayTrips(dateKey).forEach(t=>{
     byApp[t.app]=(byApp[t.app]||0)+Number(t.amount||0);
     if(typeof t.hour==='number') byHour[t.hour]=(byHour[t.hour]||0)+Number(t.amount||0);
+    const pid=t.pay||'cash'; byPay[pid]=(byPay[pid]||0)+Number(t.amount||0);
   });
   const goal = goalForDate(dateKey);
   return {
     date:dateKey, dow:new Date(dateKey+'T00:00:00').getDay(),
     income:inc, expense:exp, net:inc-exp, goal, goalMet:inc>=goal,
     trips:dayTrips(dateKey).length, km:totalKm(dateKey),
-    prayers:prayerCount(dateKey), habits:0,
-    byApp, byHour,
+    prayers:prayerCount(dateKey), habits:habitCount(dateKey),
+    byApp, byHour, byPay,
   };
 }
 function dayHasDataFor(dk){
   const o=state.byDay[dk]; if(!o) return false;
   return (Array.isArray(o.trips)&&o.trips.length>0) || (Array.isArray(o.expenses)&&o.expenses.length>0) ||
-         (o.prayers && PRAYERS.some(p=>o.prayers[p.id]));
+         (o.prayers && PRAYERS.some(p=>o.prayers[p.id])) || (o.habits && HABIT_KEYS.some(k=>o.habits[k]));
 }
 function dayHasData(){ return dayHasDataFor(state.activeDate||todayKey()); }
 function clearDay(){
@@ -2075,8 +2243,26 @@ function renderReports(){
 
   renderChart();
   renderInsights(recs);
+  renderPaySplit(recs);
   renderStreaks();
   renderArchiveList();
+}
+function renderPaySplit(recs){
+  const box=$('#paySplit'); if(!box) return;
+  const tot={};
+  recs.forEach(r=>{ const bp=r.byPay||{}; for(const k in bp) tot[k]=(tot[k]||0)+bp[k]; });
+  const grand=PAYMENTS.reduce((s,p)=>s+(tot[p.id]||0),0);
+  if(grand<=0){ box.innerHTML='<div class="empty">لا توجد رحلات في هذه الفترة بعد</div>'; return; }
+  // شريط مجمّع
+  let barHtml='<div class="pay-split-bar">';
+  PAYMENTS.forEach(p=>{ const v=tot[p.id]||0; if(v<=0) return; const pct=(v/grand)*100; barHtml+=`<div class="pay-seg" style="width:${pct}%;background:${p.color}">${pct>=12?Math.round(pct)+'%':''}</div>`; });
+  barHtml+='</div>';
+  // صفوف التفصيل
+  let rows='';
+  PAYMENTS.forEach(p=>{ const v=tot[p.id]||0; const pct=grand>0?Math.round((v/grand)*100):0;
+    rows+=`<div class="pay-row"><span class="pr-dot" style="background:${p.color}"></span><span class="pr-name">${p.emoji} ${p.name}</span><span class="pr-amt">${fmt(v)} ريال</span><span class="pr-pct">${pct}%</span></div>`;
+  });
+  box.innerHTML=barHtml+rows;
 }
 
 // رسم بياني لآخر 7 أيام
@@ -2098,8 +2284,42 @@ function renderChart(){
       <div class="bar-lbl">${DOW_AR[d.dow].replace('الإ','إ')}</div>`;
     wrap.appendChild(col);
   });
+  renderWeeksChart();
 }
-
+function weekStartOf(d){ const x=new Date(d); const off=(x.getDay()+1)%7; x.setDate(x.getDate()-off); x.setHours(0,0,0,0); return x; }
+function renderWeeksChart(){
+  const wrap=$('#weeksChart'); if(!wrap) return; wrap.innerHTML='';
+  const recs=allRecords();
+  // اجمع الدخل لكل أسبوع (آخر 4 أسابيع)
+  const thisWeek=weekStartOf(new Date());
+  const weeks=[];
+  for(let i=3;i>=0;i--){
+    const ws=new Date(thisWeek); ws.setDate(thisWeek.getDate()-i*7);
+    const we=new Date(ws); we.setDate(ws.getDate()+7);
+    const wsK=dateKeyFromObj(ws), weK=dateKeyFromObj(we);
+    const sum=recs.filter(r=>r.date>=wsK && r.date<weK).reduce((s,r)=>s+r.income,0);
+    weeks.push({val:sum, label:i===0?'هذا الأسبوع':i===1?'السابق':(i+' أسابيع')});
+  }
+  const max=Math.max(1,...weeks.map(w=>w.val));
+  weeks.forEach(w=>{
+    const h=Math.round((w.val/max)*100);
+    const col=document.createElement('div'); col.className='bar-col';
+    col.innerHTML=`<div class="bar-val">${w.val?fmt(w.val):''}</div>
+      <div class="bar ${w.val===max&&w.val>0?'top':''}" style="height:${w.val?Math.max(h,5):2}%"></div>
+      <div class="bar-lbl">${w.label}</div>`;
+    wrap.appendChild(col);
+  });
+  // مقارنة هذا الأسبوع بالسابق
+  const box=$('#weekCompare'); if(!box) return;
+  const cur=weeks[3].val, prev=weeks[2].val;
+  if(prev>0){
+    const diff=cur-prev, pct=Math.round((diff/prev)*100);
+    const up=diff>=0;
+    box.innerHTML=`<div class="week-compare ${up?'up':'down'}">${up?'📈 ارتفع':'📉 انخفض'} دخلك ${Math.abs(pct)}% عن الأسبوع الماضي (${up?'+':''}${fmt(diff)} ريال)</div>`;
+  } else if(cur>0){
+    box.innerHTML=`<div class="week-compare up">🚀 بداية أسبوع جديد بدخل ${fmt(cur)} ريال</div>`;
+  } else { box.innerHTML=''; }
+}
 function renderInsights(recs){
   const box=$('#insights');
   if(!recs.length){ box.innerHTML='<div class="empty">لا توجد بيانات كافية بعد — سجّل أيامك وبتشوف رؤاك تتكوّن 🌱</div>'; return; }
@@ -2167,6 +2387,19 @@ function renderArchiveList(){
   });
 }
 
+/* ============ مودال الملاحظة ============ */
+let noteSaveCb=null;
+function openNoteModal(current, cb){
+  noteSaveCb=cb;
+  $('#noteInput').value=current||'';
+  $('#noteModal').classList.add('show');
+  setTimeout(()=>$('#noteInput').focus(),100);
+}
+$('#noteCancel').onclick=()=>{ $('#noteModal').classList.remove('show'); noteSaveCb=null; };
+$('#noteModal').addEventListener('click',e=>{ if(e.target.id==='noteModal'){ $('#noteModal').classList.remove('show'); noteSaveCb=null; } });
+$('#noteSave').onclick=()=>{ if(noteSaveCb) noteSaveCb($('#noteInput').value); $('#noteModal').classList.remove('show'); noteSaveCb=null; };
+$('#noteInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#noteSave').click(); });
+
 /* ============ النسخة الاحتياطية ============ */
 function exportBackup(){
   try{
@@ -2215,7 +2448,7 @@ $('#importFile').onchange=(e)=>{ const f=e.target.files[0]; if(f) importBackup(f
 /* ============ التشغيل ============ */
 function renderAll(){
   renderHeader(); renderHome();
-  renderAppChips(); renderTrips(); renderTripDay();
+  renderAppChips(); renderPayChips(); renderTrips(); renderTripDay();
   renderExpChips(); renderExpenses();
   renderHabits(); renderTasks(); renderGoals();
   renderReports();
