@@ -116,7 +116,10 @@ nav.tabs{
   padding:9px 8px;margin:6px 6px 0;
   background:color-mix(in srgb, var(--bg-1) 80%, transparent);
   backdrop-filter:blur(14px);border-radius:18px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
 }
+nav.tabs::-webkit-scrollbar{display:none;}
+.tab{min-width:52px;}
 @supports not (backdrop-filter:blur(1px)){ nav.tabs{background:var(--bg-1);} }
 .tab{
   flex:1;border:none;background:transparent;color:var(--text-soft);
@@ -203,6 +206,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 
 /* أزرار الاختيار (التطبيقات / المصروفات) */
 .chips{display:flex;flex-wrap:wrap;gap:9px;}
+/* شبكة منتظمة لأنواع المصروفات والبنوك */
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.exp-grid .chip{flex:none;min-height:46px;padding:9px 6px;font-size:.82rem;justify-content:center;flex-direction:column;gap:4px;text-align:center;}
+.exp-grid .chip .c-emoji{font-size:1.2rem;}
 .chip{
   border:2px solid var(--border);background:var(--surface-2);color:var(--text);
   padding:12px 14px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:.92rem;
@@ -363,6 +370,29 @@ input[type="time"]:focus{border-color:var(--primary);}
 .gi-task.done .gt-text{text-decoration:line-through;color:var(--text-soft);}
 .gi-task .gt-text{flex:1;cursor:pointer;}
 .gi-empty{font-size:.78rem;color:var(--text-soft);margin-top:8px;font-style:italic;}
+/* الديون */
+.debt-summary{display:flex;gap:11px;}
+.ds-item{flex:1;text-align:center;padding:15px 10px;border-radius:var(--radius-sm);border:1px solid var(--border-2);}
+.ds-owed{background:var(--green-soft);}
+.ds-owe{background:var(--red-soft);}
+.ds-val{font-size:1.6rem;font-weight:700;letter-spacing:-.5px;}
+.ds-owed .ds-val{color:var(--green);}
+.ds-owe .ds-val{color:var(--red);}
+.ds-lbl{font-size:.76rem;color:var(--text-muted);margin-top:4px;}
+.debt-net{margin-top:14px;text-align:center;font-weight:700;font-size:.98rem;padding:11px;border-radius:var(--radius-sm);background:var(--surface-2);}
+.debt-item{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:13px;margin-bottom:9px;}
+.debt-item.paid{opacity:.6;}
+.di-body{flex:1;min-width:0;}
+.di-person{font-weight:700;font-size:.96rem;}
+.di-meta{font-size:.78rem;color:var(--text-muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
+.di-amount{font-weight:700;font-size:1.05rem;}
+.di-amount.owed{color:var(--green);}
+.di-amount.owe{color:var(--red);}
+.di-due{font-size:.74rem;padding:2px 8px;border-radius:99px;background:var(--surface-3);}
+.di-due.late{background:var(--red-soft);color:var(--red);font-weight:700;}
+.di-actions{display:flex;flex-direction:column;gap:5px;}
+.di-pay{border:none;background:var(--green-soft);color:var(--green);padding:7px 10px;border-radius:9px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.di-unpay{border:none;background:var(--surface-3);color:var(--text-muted);padding:7px 10px;border-radius:9px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
 /* استمرارية العادات */
 .hs-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);margin-bottom:8px;}
 .hs-name{font-weight:600;font-size:.92rem;}
@@ -614,6 +644,7 @@ input[type="time"]:focus{border-color:var(--primary);}
     <button class="tab active" data-page="home"><span class="ti">🏠</span>الرئيسية</button>
     <button class="tab" data-page="trips"><span class="ti">🚗</span>الرحلات</button>
     <button class="tab" data-page="expenses"><span class="ti">💸</span>المصروفات</button>
+    <button class="tab" data-page="debts"><span class="ti">🧾</span>الديون</button>
     <button class="tab" data-page="habits"><span class="ti">✅</span>العادات</button>
     <button class="tab" data-page="tasks"><span class="ti">📋</span>المهام</button>
     <button class="tab" data-page="goals"><span class="ti">🎯</span>الأهداف</button>
@@ -737,11 +768,14 @@ input[type="time"]:focus{border-color:var(--primary);}
 
     <!-- ============ المصروفات ============ -->
     <section class="page" id="page-expenses">
+      <!-- شريط الأيام -->
+      <div class="day-strip" id="expDayStrip"></div>
+
       <div class="card">
         <h2 class="card-title red">💸 تسجيل مصروف جديد</h2>
         <div class="field">
           <label>نوع المصروف</label>
-          <div class="chips" id="expChips"></div>
+          <div class="exp-grid" id="expChips"></div>
         </div>
         <div class="field" id="otherField" style="display:none;">
           <label>وصف المصروف</label>
@@ -750,6 +784,14 @@ input[type="time"]:focus{border-color:var(--primary);}
         <div class="field">
           <label>المبلغ (ريال)</label>
           <input type="number" id="expAmount" inputmode="decimal" placeholder="مثال: 50" />
+        </div>
+        <div class="field">
+          <label>طريقة الدفع</label>
+          <div class="chips" id="expPayChips"></div>
+        </div>
+        <div class="field" id="bankField" style="display:none;">
+          <label>البطاقة / المحفظة</label>
+          <div class="exp-grid" id="bankChips"></div>
         </div>
         <div class="field">
           <label>ملاحظة (اختياري)</label>
@@ -774,6 +816,52 @@ input[type="time"]:focus{border-color:var(--primary);}
       <div class="card">
         <h2 class="card-title red">📑 المصروفات المسجلة</h2>
         <div id="expList"></div>
+      </div>
+    </section>
+
+    <!-- ============ الديون ============ -->
+    <section class="page" id="page-debts">
+      <!-- ملخص -->
+      <div class="card">
+        <h2 class="card-title">🧾 ملخص الديون</h2>
+        <div class="debt-summary">
+          <div class="ds-item ds-owed"><div class="ds-val" id="dsOwed">0</div><div class="ds-lbl">💚 لك (تنتظر)</div></div>
+          <div class="ds-item ds-owe"><div class="ds-val" id="dsOwe">0</div><div class="ds-lbl">🔴 عليك (تدفع)</div></div>
+        </div>
+        <div class="debt-net" id="debtNet"></div>
+      </div>
+
+      <!-- إضافة دين -->
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">➕ تسجيل دين جديد</h2>
+        </div>
+        <div class="add-panel" id="debtPanel">
+          <div class="chips" id="debtTypeChips"></div>
+          <input type="text" id="debtPerson" placeholder="اسم الشخص" style="margin-top:11px;" />
+          <div class="row2">
+            <input type="number" id="debtAmount" inputmode="decimal" placeholder="المبلغ (ريال)" />
+            <input type="date" id="debtDue" />
+          </div>
+          <input type="text" id="debtNote" placeholder="ملاحظة (اختياري)" style="margin-top:11px;" />
+          <button class="btn-primary" id="addDebtBtn">➕ إضافة الدين</button>
+        </div>
+      </div>
+
+      <!-- القوائم -->
+      <div class="card">
+        <h2 class="card-title green">💚 ديون لك</h2>
+        <div id="debtsOwedList"></div>
+      </div>
+      <div class="card">
+        <h2 class="card-title red">🔴 ديون عليك</h2>
+        <div id="debtsOweList"></div>
+      </div>
+
+      <!-- المسددة -->
+      <div class="card">
+        <h2 class="card-title">✅ ديون مسدّدة</h2>
+        <div id="debtsPaidList"></div>
       </div>
     </section>
 
@@ -1074,6 +1162,15 @@ const PAYMENTS = [
   {id:'app',     name:'عبر التطبيق',emoji:'📱', color:'#7c3aed'},
 ];
 function paymentById(id){ return PAYMENTS.find(p=>p.id===id)||PAYMENTS[0]; }
+const BANKS = [
+  {id:'alinma',  name:'الإنماء',     emoji:'🟢'},
+  {id:'albilad', name:'البلاد',      emoji:'🔵'},
+  {id:'barq',    name:'برق',         emoji:'⚡'},
+  {id:'neoleap', name:'نيوليب',      emoji:'🟣'},
+  {id:'mobily',  name:'موبايلي باي', emoji:'🟠'},
+  {id:'stcpay',  name:'STC Pay',     emoji:'🟪'},
+];
+function bankById(id){ return BANKS.find(b=>b.id===id)||null; }
 const EXPENSE_TYPES = [
   {id:'fuel',     name:'وقود',        emoji:'⛽', color:'#ef4444'},
   {id:'food',     name:'أكل',         emoji:'🍔', color:'#f59e0b'},
@@ -1159,6 +1256,7 @@ function defaultState(){
     byDay:{}, // { 'YYYY-MM-DD': {trips:[],expenses:[],prayers:{...}} }
     habitsMeta:{walkMin:15}, // إعدادات ثابتة (مدة المشي الافتراضية)
     engWords:[],
+    debts:[],
     tasks:weeklyPack().tasks,
     goals:weeklyPack().goals,
     archive:[],          // أرشيف الأيام السابقة للتقارير
@@ -1180,6 +1278,7 @@ function load(){
       theme: saved.theme ?? null,
       byDay: (saved.byDay && typeof saved.byDay==='object') ? saved.byDay : {},
       habitsMeta: {walkMin:15, ...(saved.habitsMeta||{})},
+      debts: Array.isArray(saved.debts)? saved.debts : [],
       engWords: Array.isArray(saved.engWords)? saved.engWords : (typeof saved.engWords==='string' && saved.engWords.trim()? saved.engWords.split('\n').filter(Boolean).map(w=>({id:uid(),text:w,date:saved.activeDate||todayKey()})) : []),
       tasks: Array.isArray(saved.tasks)? saved.tasks.map(t=>{
         const o={cat:'work',repeat:'none',priority:'normal',done:false,lastDone:'',goalId:'',time:'',dur:0,...t};
@@ -1461,7 +1560,48 @@ function addTripNote(id){
 }
 
 /* ============ المصروفات ============ */
-let selExp=EXPENSE_TYPES[0].id;
+let selExp=EXPENSE_TYPES[0].id, selExpPay='cash', selBank=BANKS[0].id;
+const EXP_PAYMENTS=PAYMENTS.filter(p=>p.id==='cash'||p.id==='network'); // المصروفات: كاش وشبكة فقط
+function renderExpPayChips(){
+  const wrap=$('#expPayChips'); if(!wrap) return; wrap.innerHTML='';
+  EXP_PAYMENTS.forEach(p=>{
+    const sel=selExpPay===p.id;
+    const b=document.createElement('button');
+    b.className='chip'+(sel?' sel':'');
+    b.innerHTML=`<span class="c-emoji">${p.emoji}</span>${p.name}`;
+    if(sel) b.style.background=p.color;
+    b.onclick=()=>{ selExpPay=p.id; renderExpPayChips(); $('#bankField').style.display=(p.id==='network')?'block':'none'; };
+    wrap.appendChild(b);
+  });
+  $('#bankField').style.display=(selExpPay==='network')?'block':'none';
+}
+function renderBankChips(){
+  const wrap=$('#bankChips'); if(!wrap) return; wrap.innerHTML='';
+  BANKS.forEach(bk=>{
+    const sel=selBank===bk.id;
+    const b=document.createElement('button');
+    b.className='chip'+(sel?' sel':'');
+    b.innerHTML=`<span class="c-emoji">${bk.emoji}</span>${bk.name}`;
+    if(sel) b.style.background='var(--primary)';
+    b.onclick=()=>{ selBank=bk.id; renderBankChips(); };
+    wrap.appendChild(b);
+  });
+}
+function renderExpDayStrip(){
+  const strip=$('#expDayStrip'); if(!strip) return; strip.innerHTML='';
+  const names=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+  const ws=new Date(weekStartKey()+'T00:00:00');
+  for(let i=0;i<7;i++){
+    const d=new Date(ws); d.setDate(ws.getDate()+i);
+    const key=dateKeyFromObj(d);
+    const cell=document.createElement('div');
+    cell.className='day-cell'+(key===tripDate?' sel':'')+(key===todayKey()?' today':'');
+    const hasExp=(state.byDay[key]&&Array.isArray(state.byDay[key].expenses)&&state.byDay[key].expenses.length>0);
+    cell.innerHTML=`<span class="dc-name">${names[d.getDay()]}</span><span class="dc-num">${d.getDate()}</span>${hasExp?'<span class="dc-dot" style="background:var(--red)"></span>':''}`;
+    cell.onclick=()=>{ tripDate=key; renderTrips(); renderExpenses(); renderTripDay(); };
+    strip.appendChild(cell);
+  }
+}
 function renderExpChips(){
   const wrap=$('#expChips'); wrap.innerHTML='';
   EXPENSE_TYPES.forEach(t=>{
@@ -1484,13 +1624,14 @@ $('#addExpBtn').onclick=()=>{
     if(!o){ toast('اكتب وصف المصروف 🙏'); return; }
     label=o;
   }
-  dayExpenses(tripDate).push({ id:uid(), type:type.id, emoji:type.emoji, color:type.color, label, amount, note:$('#expNote').value.trim(), time:nowTime() });
+  dayExpenses(tripDate).push({ id:uid(), type:type.id, emoji:type.emoji, color:type.color, label, amount, pay:selExpPay, bank:(selExpPay==='network'?selBank:''), note:$('#expNote').value.trim(), time:nowTime() });
   save();
   $('#expAmount').value=''; $('#expNote').value=''; $('#expOther').value='';
   renderExpenses(); renderTripDay(); renderHome();
   toast('تم تسجيل المصروف ✅');
 };
 function renderExpenses(){
+  renderExpDayStrip();
   const inc=totalIncome(tripDate), exp=totalExpense(tripDate), net=inc-exp;
   $('#fcIncome').textContent=fmt(inc);
   $('#fcExpense').textContent=fmt(exp);
@@ -1501,11 +1642,14 @@ function renderExpenses(){
   if(!exps.length){ list.innerHTML='<div class="empty">لا توجد مصروفات مسجلة في هذا اليوم</div>'; return; }
   list.innerHTML='';
   exps.forEach(e=>{
+    const pay=e.pay?paymentById(e.pay):null;
+    const bk=e.bank?bankById(e.bank):null;
+    const payLabel = pay ? (bk? pay.emoji+' '+bk.name : pay.emoji+' '+pay.name) : '';
     const el=document.createElement('div'); el.className='list-item';
     el.innerHTML=`
       <div class="li-ico" style="background:${hexA(e.color,.15)};color:${e.color}">${e.emoji}</div>
       <div class="li-body">
-        <div class="li-top"><span style="font-weight:600">${escapeHtml(e.label)}</span></div>
+        <div class="li-top"><span style="font-weight:600">${escapeHtml(e.label)}</span>${pay?`<span class="pay-tag" style="background:${hexA(pay.color,.15)};color:${pay.color}">${payLabel}</span>`:''}</div>
         <div class="li-meta"><span class="li-amount red">${fmt(e.amount)} ريال</span><span>🕒 ${e.time}</span></div>
         ${e.note?`<div class="li-note">📝 ${escapeHtml(e.note)}</div>`:''}
       </div>
@@ -2445,11 +2589,94 @@ $('#exportBtn').onclick=exportBackup;
 $('#importBtn').onclick=()=>$('#importFile').click();
 $('#importFile').onchange=(e)=>{ const f=e.target.files[0]; if(f) importBackup(f); e.target.value=''; };
 
+/* ============ الديون ============ */
+const DEBT_TYPES=[
+  {id:'owed', name:'لي (شخص يدين لي)', emoji:'💚', color:'#16a34a'},
+  {id:'owe',  name:'عليّ (أنا أدين)',  emoji:'🔴', color:'#dc2626'},
+];
+let selDebtType='owed';
+function renderDebtTypeChips(){
+  const wrap=$('#debtTypeChips'); if(!wrap) return; wrap.innerHTML='';
+  DEBT_TYPES.forEach(t=>{
+    const sel=selDebtType===t.id;
+    const b=document.createElement('button');
+    b.className='chip'+(sel?' sel':'');
+    b.innerHTML=`<span class="c-emoji">${t.emoji}</span>${t.name}`;
+    if(sel) b.style.background=t.color;
+    b.onclick=()=>{ selDebtType=t.id; renderDebtTypeChips(); };
+    wrap.appendChild(b);
+  });
+}
+$('#addDebtBtn').onclick=()=>{
+  const person=$('#debtPerson').value.trim();
+  const amount=parseFloat($('#debtAmount').value);
+  if(!person){ toast('اكتب اسم الشخص 🙏'); return; }
+  if(!amount||amount<=0){ toast('اكتب المبلغ 🙏'); return; }
+  state.debts.push({ id:uid(), type:selDebtType, person, amount, due:$('#debtDue').value||'', note:$('#debtNote').value.trim(), paid:false, created:todayKey() });
+  save();
+  $('#debtPerson').value=''; $('#debtAmount').value=''; $('#debtDue').value=''; $('#debtNote').value='';
+  renderDebts(); toast('تم تسجيل الدين ✅');
+};
+function renderDebts(){
+  renderDebtTypeChips();
+  const owed=state.debts.filter(d=>d.type==='owed' && !d.paid);
+  const owe=state.debts.filter(d=>d.type==='owe' && !d.paid);
+  const paid=state.debts.filter(d=>d.paid);
+  const sumOwed=owed.reduce((s,d)=>s+Number(d.amount||0),0);
+  const sumOwe=owe.reduce((s,d)=>s+Number(d.amount||0),0);
+  $('#dsOwed').textContent=fmt(sumOwed);
+  $('#dsOwe').textContent=fmt(sumOwe);
+  const net=sumOwed-sumOwe;
+  const nb=$('#debtNet');
+  if(net>0) nb.innerHTML=`<span style="color:var(--green)">صافي لك: +${fmt(net)} ريال 💚</span>`;
+  else if(net<0) nb.innerHTML=`<span style="color:var(--red)">صافي عليك: ${fmt(net)} ريال 🔴</span>`;
+  else nb.innerHTML='<span style="color:var(--text-muted)">متوازن — لا لك ولا عليك</span>';
+
+  renderDebtList('debtsOwedList', owed, 'owed');
+  renderDebtList('debtsOweList', owe, 'owe');
+  renderDebtList('debtsPaidList', paid, 'paid');
+}
+function renderDebtList(elId, arr, kind){
+  const list=$('#'+elId); if(!list) return;
+  if(!arr.length){ list.innerHTML='<div class="empty">'+(kind==='paid'?'لا توجد ديون مسدّدة':'لا توجد ديون هنا')+'</div>'; return; }
+  list.innerHTML='';
+  arr.forEach(d=>{
+    const cls = d.type==='owed'?'owed':'owe';
+    let dueTxt='', late=false;
+    if(d.due){
+      const dd=new Date(d.due+'T00:00:00');
+      late = !d.paid && d.due<todayKey();
+      dueTxt=dd.toLocaleDateString('ar-u-ca-gregory-nu-latn',{day:'numeric',month:'short'});
+    }
+    const el=document.createElement('div'); el.className='debt-item'+(d.paid?' paid':'');
+    el.innerHTML=`
+      <div class="di-body">
+        <div class="di-person">${escapeHtml(d.person)}</div>
+        <div class="di-meta">
+          <span class="di-amount ${cls}">${fmt(d.amount)} ريال</span>
+          ${dueTxt?`<span class="di-due ${late?'late':''}">📅 ${dueTxt}${late?' (متأخر)':''}</span>`:''}
+        </div>
+        ${d.note?`<div class="li-note">📝 ${escapeHtml(d.note)}</div>`:''}
+      </div>
+      <div class="di-actions">
+        ${d.paid? `<button class="di-unpay">↩ تراجع</button>` : `<button class="di-pay">✓ سُدّد</button>`}
+        <button class="del-btn" style="width:auto;padding:7px 10px;font-size:.78rem;">🗑️</button>
+      </div>`;
+    const payBtn=el.querySelector('.di-pay');
+    if(payBtn) payBtn.onclick=()=>{ d.paid=true; d.paidDate=todayKey(); save(); renderDebts(); toast('تم تسديد الدين ✅'); };
+    const unpayBtn=el.querySelector('.di-unpay');
+    if(unpayBtn) unpayBtn.onclick=()=>{ d.paid=false; save(); renderDebts(); toast('تم التراجع'); };
+    el.querySelector('.del-btn').onclick=()=>{ state.debts=state.debts.filter(x=>x.id!==d.id); save(); renderDebts(); toast('تم حذف الدين'); };
+    list.appendChild(el);
+  });
+}
+
 /* ============ التشغيل ============ */
 function renderAll(){
   renderHeader(); renderHome();
   renderAppChips(); renderPayChips(); renderTrips(); renderTripDay();
-  renderExpChips(); renderExpenses();
+  renderExpChips(); renderExpPayChips(); renderBankChips(); renderExpenses();
+  renderDebts();
   renderHabits(); renderTasks(); renderGoals();
   renderReports();
   updateLastBackup();
